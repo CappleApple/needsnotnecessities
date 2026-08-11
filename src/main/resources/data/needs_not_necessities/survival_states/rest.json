@@ -1,0 +1,48 @@
+{
+  "neutral_state": "neutral",
+  "states": [
+    {
+      "id": "exhausted",
+      "name": "Exhausted",
+      "order": 0,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 0.55,
+      "notifications": [
+        {
+          "type": "SOUND",
+          "sound": "needs_not_necessities:notification.rest_low",
+          "volume": 0.65,
+          "pitch": 1.0
+        }
+      ],
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": -0.08, "operation": "MULTIPLY_TOTAL" },
+        { "id": "attack_speed", "target": "minecraft:generic.attack_speed", "amount": -0.12, "operation": "MULTIPLY_TOTAL" }
+      ]
+    },
+    {
+      "id": "tired",
+      "name": "Tired",
+      "order": 1,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 0.8,
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": -0.035, "operation": "MULTIPLY_TOTAL" },
+        { "id": "attack_speed", "target": "minecraft:generic.attack_speed", "amount": -0.05, "operation": "MULTIPLY_TOTAL" }
+      ]
+    },
+    { "id": "neutral", "name": "Neutral", "order": 2, "duration_hours": 8.0, "passive_regeneration_multiplier": 1.0 },
+    { "id": "rested", "name": "Rested", "order": 3, "duration_hours": 8.0, "passive_regeneration_multiplier": 1.08 },
+    {
+      "id": "well_rested",
+      "name": "Well Rested",
+      "order": 4,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 1.15,
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": 0.025, "operation": "MULTIPLY_TOTAL" },
+        { "id": "attack_speed", "target": "minecraft:generic.attack_speed", "amount": 0.03, "operation": "MULTIPLY_TOTAL" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "tags": [
+    "c:foods/bread",
+    "c:foods/grain",
+    "c:foods/dough",
+    "c:food/grain"
+  ],
+  "traits": {
+    "mining": 1.5,
+    "movement": 1.0
+  },
+  "bonuses": [
+    {
+      "id": "mining",
+      "trait": "mining",
+      "target": "minecraft:player.block_break_speed",
+      "amount": 0.04,
+      "operation": "MULTIPLY_TOTAL"
+    },
+    {
+      "id": "movement",
+      "trait": "movement",
+      "target": "minecraft:generic.movement_speed",
+      "amount": 0.02,
+      "operation": "MULTIPLY_TOTAL"
+    }
+  ],
+  "score_bonus": 1.0,
+  "duration_bonus_hours": 1.0
+}

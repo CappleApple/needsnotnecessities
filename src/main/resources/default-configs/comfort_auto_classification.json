@@ -1,0 +1,56 @@
+{
+  "groups": [
+    {
+      "group": "beds",
+      "name": "Bed",
+      "namespace_regex": "^(?!minecraft$).+$",
+      "regex": "(?:^|_)(?:bed|futon|hammock|sleeping_bag)(?:_|$)",
+      "exclude_regex": "(?:^|_)(?:flower|garden|river)(?:_|$)",
+      "comfort": 6.0
+    },
+    {
+      "group": "chairs",
+      "name": "Chair",
+      "namespace_regex": "^(?!minecraft$).+$",
+      "regex": "(?:^|_)(?:chair|armchair|recliner|rocking_chair|stool|seat)(?:_|$)",
+      "comfort": 4.0
+    },
+    {
+      "group": "benches",
+      "name": "Bench",
+      "namespace_regex": "^(?!minecraft$).+$",
+      "regex": "(?:^|_)(?:bench|pew)(?:_|$)",
+      "comfort": 4.0
+    },
+    {
+      "group": "sofas",
+      "name": "Sofa",
+      "namespace_regex": "^(?!minecraft$).+$",
+      "regex": "(?:^|_)(?:sofa|couch|loveseat|settee)(?:_|$)",
+      "comfort": 6.0
+    },
+    {
+      "group": "tables",
+      "name": "Table",
+      "namespace_regex": "^(?!minecraft$).+$",
+      "regex": "(?:^|_)(?:table|desk|nightstand)(?:_|$)",
+      "exclude_regex": "(?:^|_)(?:crafting|smithing|fletching|cartography|enchanting|cutting|workbench|saw|lamp|light)(?:_|$)",
+      "comfort": 5.0
+    },
+    {
+      "group": "lighting",
+      "name": "Lighting",
+      "namespace_regex": "^(?!minecraft$).+$",
+      "regex": "(?:^|_)(?:lamp|lantern|sconce|chandelier|candelabra|candle|streetlight|streetlamp)(?:_|$)",
+      "comfort": 4.0
+    },
+    {
+      "group": "hearths",
+      "name": "Hearth",
+      "namespace_regex": "^(?!minecraft$).+$",
+      "regex": "(?:^|_)(?:fireplace|hearth|chiminea|brazier|stove|oven)(?:_|$)",
+      "exclude_regex": "(?:^|_)(?:industrial|machine|generator|nuclear|blast|alloy|smelter)(?:_|$)",
+      "comfort": 8.0
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "threshold": 25.0,
+  "repeat": false,
+  "modifiers": [
+    {
+      "id": "passive_regeneration",
+      "target": "needs_not_necessities:passive_regeneration",
+      "amount": 0.1,
+      "operation": "MULTIPLY_TOTAL"
+    }
+  ]
+}

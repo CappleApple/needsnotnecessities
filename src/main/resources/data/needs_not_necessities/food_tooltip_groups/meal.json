@@ -1,0 +1,7 @@
+{
+  "name": "Meal",
+  "minimum_hours": 7.0,
+  "maximum_hours": 10.0,
+  "color": "#E2D56B",
+  "description": "Meal"
+}

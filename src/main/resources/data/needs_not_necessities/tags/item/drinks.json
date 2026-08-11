@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:potion",
+    "minecraft:splash_potion",
+    "minecraft:lingering_potion",
+    "minecraft:honey_bottle",
+    "minecraft:milk_bucket",
+    { "id": "#c:drinks", "required": false },
+    { "id": "#forge:drinks", "required": false },
+    { "id": "#farmersdelight:drinks", "required": false },
+    { "id": "farmersdelight:milk_bottle", "required": false },
+    { "id": "farmersdelight:hot_cocoa", "required": false },
+    { "id": "farmersdelight:apple_cider", "required": false },
+    { "id": "farmersdelight:melon_juice", "required": false },
+    { "id": "#brewinandchewin:drinks", "required": false },
+    { "id": "#croptopia:drinks", "required": false },
+    { "id": "#vinery:drinks", "required": false },
+    { "id": "#herbalbrews:drinks", "required": false }
+  ]
+}

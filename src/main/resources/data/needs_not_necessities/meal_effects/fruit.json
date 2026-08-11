@@ -1,0 +1,30 @@
+{
+  "tags": [
+    "c:foods/fruit",
+    "c:foods/fruits",
+    "c:foods/berry",
+    "c:foods/berries",
+    "c:food/fruit"
+  ],
+  "traits": {
+    "movement": 1.5,
+    "awareness": 1.0
+  },
+  "bonuses": [
+    {
+      "id": "movement",
+      "trait": "movement",
+      "target": "minecraft:generic.movement_speed",
+      "amount": 0.03,
+      "operation": "MULTIPLY_TOTAL"
+    },
+    {
+      "id": "awareness",
+      "trait": "awareness",
+      "target": "minecraft:generic.luck",
+      "amount": 0.5,
+      "operation": "ADD"
+    }
+  ],
+  "score_bonus": 0.75
+}

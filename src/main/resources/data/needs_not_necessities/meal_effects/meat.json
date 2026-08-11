@@ -1,0 +1,30 @@
+{
+  "tags": [
+    "c:foods/meat",
+    "c:foods/cooked_meat",
+    "c:foods/raw_meat",
+    "c:food/meat"
+  ],
+  "traits": {
+    "power": 2.0,
+    "recovery": 1.0
+  },
+  "bonuses": [
+    {
+      "id": "power",
+      "trait": "power",
+      "target": "minecraft:generic.attack_damage",
+      "amount": 0.05,
+      "operation": "MULTIPLY_TOTAL"
+    },
+    {
+      "id": "recovery",
+      "trait": "recovery",
+      "target": "minecraft:generic.max_health",
+      "amount": 2.0,
+      "operation": "ADD"
+    }
+  ],
+  "score_bonus": 2.0,
+  "duration_bonus_hours": 2.0
+}

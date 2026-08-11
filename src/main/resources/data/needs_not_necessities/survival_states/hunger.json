@@ -1,0 +1,90 @@
+{
+  "neutral_state": "neutral",
+  "states": [
+    {
+      "id": "starving",
+      "name": "Starving",
+      "order": 0,
+      "duration_hours": 12.0,
+      "passive_regeneration_multiplier": 0.35,
+      "notifications": [
+        {
+          "type": "SOUND",
+          "sound": "needs_not_necessities:notification.hunger_low",
+          "volume": 0.65,
+          "pitch": 1.0
+        }
+      ],
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": -0.12, "operation": "MULTIPLY_TOTAL" },
+        { "id": "attack_speed", "target": "minecraft:generic.attack_speed", "amount": -0.15, "operation": "MULTIPLY_TOTAL" },
+        { "id": "mining_speed", "target": "minecraft:player.block_break_speed", "amount": -0.2, "operation": "MULTIPLY_TOTAL" },
+        { "id": "desperate_damage", "target": "minecraft:generic.attack_damage", "amount": 0.05, "operation": "MULTIPLY_TOTAL" }
+      ]
+    },
+    {
+      "id": "ravenous",
+      "name": "Ravenous",
+      "order": 1,
+      "duration_hours": 10.0,
+      "passive_regeneration_multiplier": 0.6,
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": -0.06, "operation": "MULTIPLY_TOTAL" },
+        { "id": "attack_speed", "target": "minecraft:generic.attack_speed", "amount": -0.08, "operation": "MULTIPLY_TOTAL" },
+        { "id": "mining_speed", "target": "minecraft:player.block_break_speed", "amount": -0.12, "operation": "MULTIPLY_TOTAL" }
+      ]
+    },
+    {
+      "id": "hungry",
+      "name": "Hungry",
+      "order": 2,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 0.85,
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": -0.025, "operation": "MULTIPLY_TOTAL" },
+        { "id": "mining_speed", "target": "minecraft:player.block_break_speed", "amount": -0.05, "operation": "MULTIPLY_TOTAL" }
+      ]
+    },
+    {
+      "id": "neutral",
+      "name": "Neutral",
+      "order": 3,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 1.0
+    },
+    {
+      "id": "satiated",
+      "name": "Satiated",
+      "order": 4,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 1.05,
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": 0.025, "operation": "MULTIPLY_TOTAL" },
+        { "id": "mining_speed", "target": "minecraft:player.block_break_speed", "amount": 0.025, "operation": "MULTIPLY_TOTAL" }
+      ]
+    },
+    {
+      "id": "fulfilled",
+      "name": "Fulfilled",
+      "order": 5,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 1.15,
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": 0.04, "operation": "MULTIPLY_TOTAL" },
+        { "id": "attack_speed", "target": "minecraft:generic.attack_speed", "amount": 0.04, "operation": "MULTIPLY_TOTAL" },
+        { "id": "mining_speed", "target": "minecraft:player.block_break_speed", "amount": 0.05, "operation": "MULTIPLY_TOTAL" }
+      ]
+    },
+    {
+      "id": "stuffed",
+      "name": "Stuffed",
+      "order": 6,
+      "duration_hours": 4.0,
+      "passive_regeneration_multiplier": 1.5,
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": -0.03, "operation": "MULTIPLY_TOTAL" },
+        { "id": "attack_speed", "target": "minecraft:generic.attack_speed", "amount": -0.03, "operation": "MULTIPLY_TOTAL" }
+      ]
+    }
+  ]
+}

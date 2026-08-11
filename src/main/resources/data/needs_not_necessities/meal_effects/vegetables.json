@@ -1,0 +1,28 @@
+{
+  "tags": [
+    "c:foods/vegetable",
+    "c:foods/vegetables",
+    "c:food/vegetable"
+  ],
+  "traits": {
+    "defense": 1.5,
+    "recovery": 1.0
+  },
+  "bonuses": [
+    {
+      "id": "defense",
+      "trait": "defense",
+      "target": "minecraft:generic.armor",
+      "amount": 1.0,
+      "operation": "ADD"
+    },
+    {
+      "id": "recovery",
+      "trait": "recovery",
+      "target": "needs_not_necessities:passive_regeneration",
+      "amount": 0.08,
+      "operation": "MULTIPLY_TOTAL"
+    }
+  ],
+  "score_bonus": 1.0
+}

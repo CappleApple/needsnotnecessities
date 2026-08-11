@@ -1,0 +1,39 @@
+{
+  "neutral_state": "neutral",
+  "states": [
+    {
+      "id": "parched",
+      "name": "Parched",
+      "order": 0,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 0.8,
+      "notifications": [
+        {
+          "type": "SOUND",
+          "sound": "needs_not_necessities:notification.thirst_low",
+          "volume": 0.65,
+          "pitch": 1.0
+        }
+      ]
+    },
+    {
+      "id": "thirsty",
+      "name": "Thirsty",
+      "order": 1,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 0.9
+    },
+    { "id": "neutral", "name": "Neutral", "order": 2, "duration_hours": 8.0, "passive_regeneration_multiplier": 1.0 },
+    {
+      "id": "refreshed",
+      "name": "Refreshed",
+      "order": 3,
+      "duration_hours": 8.0,
+      "passive_regeneration_multiplier": 1.1,
+      "modifiers": [
+        { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": 0.02, "operation": "MULTIPLY_TOTAL" },
+        { "id": "mining_speed", "target": "minecraft:player.block_break_speed", "amount": 0.02, "operation": "MULTIPLY_TOTAL" }
+      ]
+    }
+  ]
+}

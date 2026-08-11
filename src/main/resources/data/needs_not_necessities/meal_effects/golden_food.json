@@ -1,0 +1,28 @@
+{
+  "tags": [
+    "c:foods/golden",
+    "c:food/golden"
+  ],
+  "traits": {
+    "defense": 3.0,
+    "recovery": 2.0
+  },
+  "bonuses": [
+    {
+      "id": "defense",
+      "trait": "defense",
+      "target": "minecraft:generic.armor",
+      "amount": 2.0,
+      "operation": "ADD"
+    },
+    {
+      "id": "recovery",
+      "trait": "recovery",
+      "target": "minecraft:generic.max_health",
+      "amount": 2.0,
+      "operation": "ADD"
+    }
+  ],
+  "score_bonus": 4.0,
+  "duration_bonus_hours": 4.0
+}

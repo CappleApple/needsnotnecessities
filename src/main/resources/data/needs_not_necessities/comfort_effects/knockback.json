@@ -1,0 +1,12 @@
+{
+  "threshold": 50.0,
+  "repeat": false,
+  "modifiers": [
+    {
+      "id": "knockback_resistance",
+      "target": "minecraft:generic.knockback_resistance",
+      "amount": 0.05,
+      "operation": "ADD"
+    }
+  ]
+}

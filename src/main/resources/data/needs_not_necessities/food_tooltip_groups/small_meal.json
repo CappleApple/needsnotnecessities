@@ -1,0 +1,7 @@
+{
+  "name": "Small Meal",
+  "minimum_hours": 4.0,
+  "maximum_hours": 7.0,
+  "color": "#C9D879",
+  "description": "Small Meal"
+}

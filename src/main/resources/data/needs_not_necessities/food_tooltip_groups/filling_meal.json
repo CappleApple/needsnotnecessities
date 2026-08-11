@@ -1,0 +1,7 @@
+{
+  "name": "Filling Meal",
+  "minimum_hours": 10.0,
+  "maximum_hours": 14.0,
+  "color": "#E8BE63",
+  "description": "Filling Meal"
+}

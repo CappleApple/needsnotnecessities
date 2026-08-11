@@ -1,0 +1,29 @@
+{
+  "tags": [
+    "c:foods/soup",
+    "c:foods/stew",
+    "c:food/soup"
+  ],
+  "traits": {
+    "recovery": 2.0,
+    "defense": 1.0
+  },
+  "bonuses": [
+    {
+      "id": "recovery",
+      "trait": "recovery",
+      "target": "needs_not_necessities:passive_regeneration",
+      "amount": 0.15,
+      "operation": "MULTIPLY_TOTAL"
+    },
+    {
+      "id": "defense",
+      "trait": "defense",
+      "target": "minecraft:generic.armor_toughness",
+      "amount": 0.5,
+      "operation": "ADD"
+    }
+  ],
+  "score_bonus": 2.0,
+  "duration_bonus_hours": 2.0
+}

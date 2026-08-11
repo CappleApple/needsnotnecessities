@@ -1,0 +1,14 @@
+{
+  "notification.hunger_low": {
+    "subtitle": "subtitles.needs_not_necessities.notification.hunger_low",
+    "sounds": ["needs_not_necessities:notifications/hunger_low"]
+  },
+  "notification.thirst_low": {
+    "subtitle": "subtitles.needs_not_necessities.notification.thirst_low",
+    "sounds": ["needs_not_necessities:notifications/thirst_low"]
+  },
+  "notification.rest_low": {
+    "subtitle": "subtitles.needs_not_necessities.notification.rest_low",
+    "sounds": ["needs_not_necessities:notifications/rest_low"]
+  }
+}

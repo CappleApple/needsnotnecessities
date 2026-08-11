@@ -1,0 +1,30 @@
+{
+  "tags": [
+    "c:foods/fish",
+    "c:foods/cooked_fish",
+    "c:foods/raw_fish",
+    "c:food/fish"
+  ],
+  "traits": {
+    "awareness": 1.5,
+    "recovery": 1.0
+  },
+  "bonuses": [
+    {
+      "id": "awareness",
+      "trait": "awareness",
+      "target": "minecraft:generic.luck",
+      "amount": 1.0,
+      "operation": "ADD"
+    },
+    {
+      "id": "recovery",
+      "trait": "recovery",
+      "target": "needs_not_necessities:passive_regeneration",
+      "amount": 0.1,
+      "operation": "MULTIPLY_TOTAL"
+    }
+  ],
+  "score_bonus": 1.5,
+  "duration_bonus_hours": 1.0
+}

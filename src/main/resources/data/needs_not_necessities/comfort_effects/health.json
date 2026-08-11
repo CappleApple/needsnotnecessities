@@ -1,0 +1,12 @@
+{
+  "threshold": 10.0,
+  "repeat": true,
+  "modifiers": [
+    {
+      "id": "max_health",
+      "target": "minecraft:generic.max_health",
+      "amount": 2.0,
+      "operation": "ADD"
+    }
+  ]
+}

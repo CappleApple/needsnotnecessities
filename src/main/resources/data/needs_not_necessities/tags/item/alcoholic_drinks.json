@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "#c:drinks/alcoholic", "required": false },
+    { "id": "#c:alcoholic_drinks", "required": false },
+    { "id": "#forge:drinks/alcoholic", "required": false },
+    { "id": "#brewinandchewin:alcoholic_drinks", "required": false },
+    { "id": "#vinery:wine", "required": false }
+  ]
+}
