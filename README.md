@@ -24,6 +24,8 @@ Build with:
 
 The versioned mod JAR is written to `build/libs/needsnotnecessities-<version>.jar`.
 
+Release notes and upgrade guidance are maintained in [CHANGELOG.md](CHANGELOG.md).
+
 Useful operator commands are rooted at `/needs_not_necessities` with `/nnn` as a short alias. See [docs/TESTING.md](docs/TESTING.md) for the multiplayer and compatibility test pass.
 
 ## Data-driven state definitions
