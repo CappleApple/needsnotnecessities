@@ -33,6 +33,8 @@ public final class SurvivalOverlayPanel {
     private static final ResourceLocation DEFAULT_PANEL_ICON = ResourceLocation.withDefaultNamespace("item/carrot");
     private static final int WIDTH = 174;
     private static final int LINE_HEIGHT = 13;
+    private static final int PANEL_ICON_SIZE = 16;
+    private static final int PANEL_ICON_TEXTURE_SIZE = 16;
     private static final PanelStateStore STATE_STORE = new ConfigPanelStateStore();
 
     private static InventoryScreen activeScreen;
@@ -293,13 +295,23 @@ public final class SurvivalOverlayPanel {
             if (icon == null) {
                 icon = DEFAULT_PANEL_ICON;
             }
-            int iconSize = 14;
-            int iconX = handle.x() + (handle.width() - iconSize) / 2;
-            int iconY = handle.y() + (handle.height() - iconSize) / 2;
+            int iconX = handle.x() + (handle.width() - PANEL_ICON_SIZE) / 2;
+            int iconY = handle.y() + (handle.height() - PANEL_ICON_SIZE) / 2;
             if (isDirectTexture(icon)) {
-                graphics.blit(textureLocation(icon), iconX, iconY, 0.0F, 0.0F, iconSize, iconSize, 16, 16);
+                graphics.blit(
+                        textureLocation(icon),
+                        iconX,
+                        iconY,
+                        PANEL_ICON_SIZE,
+                        PANEL_ICON_SIZE,
+                        0.0F,
+                        0.0F,
+                        PANEL_ICON_TEXTURE_SIZE,
+                        PANEL_ICON_TEXTURE_SIZE,
+                        PANEL_ICON_TEXTURE_SIZE,
+                        PANEL_ICON_TEXTURE_SIZE);
             } else {
-                graphics.blitSprite(icon, iconX, iconY, iconSize, iconSize);
+                graphics.blitSprite(icon, iconX, iconY, PANEL_ICON_SIZE, PANEL_ICON_SIZE);
             }
         }
 
@@ -357,7 +369,7 @@ public final class SurvivalOverlayPanel {
             config.panelHandleY.set(state.handleY());
             config.panelDockSide.set(state.dockSide().name());
             config.panelExpanded.set(state.expanded());
-            ClientConfig.SPEC.save();
+            PanelConfigPersistence.save(ClientConfig.SPEC::save);
         }
     }
 
