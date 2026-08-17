@@ -30,6 +30,18 @@
       "order": 3,
       "duration_hours": 8.0,
       "passive_regeneration_multiplier": 1.1,
+      "notifications": [
+        {
+          "type": "ACTION_BAR",
+          "message": "Your thirst is full."
+        },
+        {
+          "type": "SOUND",
+          "sound": "minecraft:entity.generic.drink",
+          "volume": 0.65,
+          "pitch": 1.0
+        }
+      ],
       "modifiers": [
         { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": 0.02, "operation": "MULTIPLY_TOTAL" },
         { "id": "mining_speed", "target": "minecraft:player.block_break_speed", "amount": 0.02, "operation": "MULTIPLY_TOTAL" }

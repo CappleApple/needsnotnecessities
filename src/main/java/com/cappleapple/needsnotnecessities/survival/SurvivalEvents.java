@@ -54,7 +54,6 @@ public final class SurvivalEvents {
         gameBus.addListener(SurvivalEvents::onPlayerRespawn);
         gameBus.addListener(SurvivalEvents::onPlayerChangedDimension);
         gameBus.addListener(SurvivalEvents::onPlayerTick);
-        gameBus.addListener(SurvivalEvents::onUseItemStarted);
         gameBus.addListener(SurvivalEvents::onFoodFinished);
         gameBus.addListener(SleepRulesService::onCanPlayerSleep);
         gameBus.addListener(SleepRulesService::onCanContinueSleeping);
@@ -218,17 +217,6 @@ public final class SurvivalEvents {
                 NeoForge.EVENT_BUS.post(new DrinkConsumedEvent(player, event.getItem(), drinkKind, adjustment));
             }
         }
-    }
-
-    private static void onUseItemStarted(LivingEntityUseItemEvent.Start event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)
-                || !ServerConfig.INSTANCE.isEnabled(SurvivalModule.THIRST)
-                || ThirstService.classify(event.getItem()) == ThirstService.DrinkKind.NONE
-                || ThirstService.canDrink(player)) {
-            return;
-        }
-        event.setCanceled(true);
-        event.setDuration(0);
     }
 
     private static void onLivingDamaged(LivingDamageEvent.Post event) {

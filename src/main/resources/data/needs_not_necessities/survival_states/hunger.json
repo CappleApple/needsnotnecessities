@@ -81,6 +81,18 @@
       "order": 6,
       "duration_hours": 4.0,
       "passive_regeneration_multiplier": 1.5,
+      "notifications": [
+        {
+          "type": "ACTION_BAR",
+          "message": "Your hunger is full."
+        },
+        {
+          "type": "SOUND",
+          "sound": "minecraft:entity.player.burp",
+          "volume": 0.65,
+          "pitch": 1.0
+        }
+      ],
       "modifiers": [
         { "id": "movement", "target": "minecraft:generic.movement_speed", "amount": -0.03, "operation": "MULTIPLY_TOTAL" },
         { "id": "attack_speed", "target": "minecraft:generic.attack_speed", "amount": -0.03, "operation": "MULTIPLY_TOTAL" }

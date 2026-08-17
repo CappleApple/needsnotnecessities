@@ -82,7 +82,7 @@ Notifications are declared at the exact state that should trigger them. Omit the
 }
 ```
 
-`{system}` and `{state}` are expanded at runtime. The bundled hunger, thirst, and rest timelines only play their respective placeholder sound when their lowest state is reached. The server-config cooldown prevents repeated re-entry spam but no longer chooses notification types.
+`{system}` and `{state}` are expanded at runtime. The bundled hunger, thirst, and rest timelines play their respective warning sound when their lowest state is reached, then show an action-bar message and play a sound when their highest state is reached. The server-config cooldown prevents repeated re-entry spam but no longer chooses notification types.
 
 The bundled hunger, thirst, and rest files are complete examples. State IDs are formed as `<namespace>:<timeline>/<state>` unless the state supplies a full resource location.
 
@@ -163,4 +163,4 @@ The default drinks tag includes vanilla potion, splash-potion, lingering-potion,
 
 Thirst has no natural timer decay. Eating reduces it by `food hunger-hours * thirst_hours_per_food_hour`; that TOML ratio is configurable. Drinks then apply their configured level adjustment, and every resulting thirst state participates in the same generic modifier pipeline as Hunger and Rest.
 
-The Hunger `eat_below_stage_percentage` and Thirst `drink_below_stage_percentage` server rules both default to 90. Ordered datapack stages are counted from worst and whole stages are selected; with five stages, 90% permits consumption in the lowest four and blocks it in the best stage.
+The Hunger `eat_below_stage_percentage` server rule defaults to 90. Ordered datapack stages are counted from worst and whole stages are selected. Drinks can be consumed at every Thirst stage.

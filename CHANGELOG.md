@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.2 - 2026-08-16
+
+### Added
+
+- The default Hunger, Thirst, and Rest datapack timelines now show a message and play a sound when their respective highest state is reached.
+- The mod now has a custom icon in the in-game mods list.
+
+### Changed
+
+- Drinks can now be consumed at every Thirst stage; the `thirst.drink_below_stage_percentage` server config option has been removed.
+
 ## 1.1.1 - 2026-08-13
 
 ### Fixed

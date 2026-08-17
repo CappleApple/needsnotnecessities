@@ -29,7 +29,6 @@ public final class ServerConfig {
     public final ModConfigSpec.DoubleValue thirstHoursPerFoodHour;
     public final ModConfigSpec.DoubleValue normalDrinkLevelAdjustment;
     public final ModConfigSpec.DoubleValue alcoholicDrinkLevelAdjustment;
-    public final ModConfigSpec.DoubleValue thirstDrinkBelowStagePercentage;
     public final ModConfigSpec.EnumValue<DeathStatePolicy> thirstDeathPolicy;
 
     public final ModConfigSpec.DoubleValue restFullRecoveryHours;
@@ -119,8 +118,6 @@ public final class ServerConfig {
                 "Configured thirst levels advanced by an item in the drinks tag.");
         alcoholicDrinkLevelAdjustment = rangedDouble(builder, "alcoholic_drink_level_adjustment", -1.0D, -100.0D, 100.0D,
                 "Configured thirst levels advanced by an alcoholic drink; negative values make the player thirstier.");
-        thirstDrinkBelowStagePercentage = rangedDouble(builder, "drink_below_stage_percentage", 90.0D, 0.0D, 100.0D,
-                "Percentage of ordered Thirst stages, counted from worst, in which players may drink.");
         thirstDeathPolicy = deathPolicy(builder, "death_behavior", DeathStatePolicy.RESET_WORST);
         builder.pop();
 

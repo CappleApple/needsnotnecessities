@@ -7,7 +7,6 @@ import com.cappleapple.needsnotnecessities.data.PlayerSurvivalData;
 import com.cappleapple.needsnotnecessities.modifier.SurvivalModifierService;
 import com.cappleapple.needsnotnecessities.survival.SurvivalModule;
 import com.cappleapple.needsnotnecessities.survival.state.StateDefinitionManager;
-import com.cappleapple.needsnotnecessities.survival.state.StagePercentageEligibility;
 import com.cappleapple.needsnotnecessities.survival.state.StateTimeline;
 import com.cappleapple.needsnotnecessities.survival.state.StateTrackService;
 import com.cappleapple.needsnotnecessities.survival.state.SurvivalStateIds;
@@ -47,19 +46,6 @@ public final class ThirstService {
             return DrinkKind.NORMAL;
         }
         return DrinkKind.NONE;
-    }
-
-    public static boolean canDrink(ServerPlayer player) {
-        if (player.isCreative() || player.isSpectator()) {
-            return true;
-        }
-        PlayerSurvivalData data = player.getData(ModAttachments.PLAYER_SURVIVAL);
-        StateTrackService.initializeMissingTracks(data);
-        StateTimeline timeline = StateDefinitionManager.INSTANCE.require(SurvivalStateIds.THIRST);
-        return StagePercentageEligibility.isBelowConfiguredPercentage(
-                timeline,
-                data.statePosition(SurvivalStateIds.THIRST),
-                ServerConfig.INSTANCE.thirstDrinkBelowStagePercentage.getAsDouble());
     }
 
     public static void onDrinkConsumed(ServerPlayer player, ItemStack consumedStack) {

@@ -9,7 +9,6 @@ class ConfigDefaultsTest {
     @Test
     void requestedConsumptionMealAndSleepDefaultsAreStable() {
         assertEquals(90.0D, ServerConfig.INSTANCE.hungerEatBelowStagePercentage.getDefault());
-        assertEquals(90.0D, ServerConfig.INSTANCE.thirstDrinkBelowStagePercentage.getDefault());
         assertEquals(5, ServerConfig.INSTANCE.mealMaximumBonuses.getDefault());
         assertEquals(0.5D, ServerConfig.INSTANCE.mealSameGroupDiminishingFactor.getDefault());
         assertTrue(ServerConfig.INSTANCE.allowDaytimeSleep.getDefault());
