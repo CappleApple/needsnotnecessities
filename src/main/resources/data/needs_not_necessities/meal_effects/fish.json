@@ -14,8 +14,8 @@
       "id": "awareness",
       "trait": "awareness",
       "target": "minecraft:generic.luck",
-      "amount": 1.0,
-      "operation": "ADD"
+      "amount": 0.1,
+      "operation": "MULTIPLY_TOTAL"
     },
     {
       "id": "recovery",

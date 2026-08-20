@@ -25,8 +25,8 @@ Place definitions in `data/<namespace>/meal_effects/*.json`. A definition must s
       "id": "recovery",
       "trait": "recovery",
       "target": "minecraft:generic.max_health",
-      "amount": 2.0,
-      "operation": "ADD"
+      "amount": 0.1,
+      "operation": "MULTIPLY_TOTAL"
     }
   ],
   "score_bonus": 2.0,
@@ -38,7 +38,7 @@ An exact-item rule uses `"item": "minecraft:beef"` instead of `tags`. Supported 
 
 The result item and every recipe ingredient contribute their matching effects. When an ingredient is itself an edible prepared food with a recipe, its ingredients are resolved recursively through every further prepared-food layer. This makes an intermediate food's displayed buffs carry into meals that use it, such as Raw Pasta carrying its dough-derived bonuses into Pasta with Meatballs. A repeated item on the active recipe path ends that branch, preventing reversible or cyclic recipes from recursing forever without imposing an arbitrary depth cutoff.
 
-Each `meal_effects` definition ID is one food group. Distinct groups contribute at full strength and amounts with the same modifier target and operation add into one combined modifier, so two groups that each grant `+1 armor` produce one `+2 armor` meal effect.
+Each `meal_effects` definition ID is one food group. Distinct groups contribute at full strength and amounts with the same modifier target and operation add into one combined modifier, so two groups that each grant `+5% armor` produce one `+10% armor` meal effect. All bundled food, Hunger, Thirst, Rest, and Comfort modifiers use percentage operations; `ADD` remains available for custom datapacks.
 
 Repeated ingredients from the same group use geometric diminishing returns across the entire resolved recipe tree. The server setting `meal.same_group_diminishing_factor` defaults to `0.5`, producing ingredient weights of 100%, 50%, 25%, 12.5%, and so on for that group. Set it to `1.0` for full stacking or `0.0` to count only the first matching ingredient. The eaten result item's own definition remains a separate full-strength base contribution. Recipe ingredient alternatives are proportionally averaged at every depth before group occurrences are counted, so a tag ingredient does not falsely count every possible alternative as another copy of the group.
 

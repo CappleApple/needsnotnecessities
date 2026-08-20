@@ -21,8 +21,8 @@
       "id": "recovery",
       "trait": "recovery",
       "target": "minecraft:generic.max_health",
-      "amount": 2.0,
-      "operation": "ADD"
+      "amount": 0.1,
+      "operation": "MULTIPLY_TOTAL"
     }
   ],
   "score_bonus": 2.0,

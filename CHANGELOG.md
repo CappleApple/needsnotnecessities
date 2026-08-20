@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.3 - 2026-08-20
+
+### Changed
+
+- Converted every bundled food, Hunger, Thirst, Rest, and Comfort attribute buff from flat additions to percentage-based modifiers, including max health, armor, armor toughness, luck, and knockback resistance.
+
 ## 1.1.2 - 2026-08-16
 
 ### Added

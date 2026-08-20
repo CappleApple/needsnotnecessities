@@ -13,8 +13,8 @@
       "id": "defense",
       "trait": "defense",
       "target": "minecraft:generic.armor",
-      "amount": 1.0,
-      "operation": "ADD"
+      "amount": 0.05,
+      "operation": "MULTIPLY_TOTAL"
     },
     {
       "id": "recovery",
