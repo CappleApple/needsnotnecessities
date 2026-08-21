@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.4 - 2026-08-21
+
+### Fixed
+
+- Comfort scans now recognize configured comfort blocks on nearby Sable sub-levels, including moving and rotated Create Aeronautics vehicles.
+
 ## 1.1.3 - 2026-08-20
 
 ### Changed

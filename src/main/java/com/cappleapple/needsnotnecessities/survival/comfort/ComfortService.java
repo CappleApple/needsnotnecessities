@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.state.BlockState;
 
 public final class ComfortService {
     private static final Map<UUID, ComfortScanResult> LAST_SCANS = new HashMap<>();
@@ -62,20 +61,16 @@ public final class ComfortService {
         int radius = ServerConfig.INSTANCE.comfortRadius.getAsInt();
         Map<String, List<ComfortContributor>> byType = new LinkedHashMap<>();
         BlockPos center = player.blockPosition();
-        for (BlockPos cursor : BlockPos.betweenClosed(center.offset(-radius, -radius, -radius), center.offset(radius, radius, radius))) {
-            BlockState state = player.level().getBlockState(cursor);
-            if (state.isAir()) {
-                continue;
-            }
+        SableComfortScanner.forEachNearbyBlock(player, radius, (state, position) -> {
             Map<String, ComfortContributor> bestAtBlock = new HashMap<>();
             for (ComfortSourceDefinition definition : ComfortSourceManager.INSTANCE.matching(state.getBlock())) {
                 ComfortContributor contributor = new ComfortContributor(
-                        cursor.immutable(), definition.id(), definition.type(), definition.comfort(), 0.0D);
+                        position, definition.id(), definition.type(), definition.comfort(), 0.0D);
                 bestAtBlock.merge(definition.type(), contributor,
                         (left, right) -> left.baseComfort() >= right.baseComfort() ? left : right);
             }
             bestAtBlock.forEach((type, contributor) -> byType.computeIfAbsent(type, ignored -> new ArrayList<>()).add(contributor));
-        }
+        });
         if (ServerConfig.INSTANCE.isEnabled(SurvivalModule.COMPATIBILITY)) {
             SurvivalProviderRegistry.comfortProviders().forEach(provider ->
                     provider.provide(player).forEach(contribution ->
