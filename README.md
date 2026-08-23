@@ -1,6 +1,6 @@
 # Needs, Not Necessities
 
-`needs_not_necessities` is a NeoForge 1.21.1 survival framework focused on preparation, readable consequences, and low-maintenance play. Its Java package root is `com.cappleapple.needsnotnecessities`.
+`needs_not_necessities` is a NeoForge 1.21.1 survival framework focused on preparation, readable consequences, and low-maintenance play. 
 
 Hunger fully replaces the vanilla hunger tick/HUD when enabled; thirst, rest, comfort, Active Meals, passive regeneration, base health, notifications, Quality Food compatibility, the inventory panel, commands, and integration hooks remain independently toggleable. Farmer's Delight Nourishment pauses the custom hunger countdown by default, vanilla Instant Health and Regeneration healing scale against player max health, and recipe ingredient bonuses combine numerically into the resulting Active Meal. Prepared-food ingredients recursively inherit their own recipe contributions at any depth with cycle protection. Different datapack food groups stack fully, while repeated ingredients from one group use a configurable geometric diminishing factor (50% by default).
 
