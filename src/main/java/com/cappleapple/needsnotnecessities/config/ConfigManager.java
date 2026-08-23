@@ -1,11 +1,13 @@
 package com.cappleapple.needsnotnecessities.config;
 
 import com.cappleapple.needsnotnecessities.NeedsNotNecessities;
+import com.cappleapple.needsnotnecessities.survival.health.BaseHealthService;
 import java.util.concurrent.atomic.AtomicLong;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public final class ConfigManager {
     private static final AtomicLong GENERATION = new AtomicLong();
@@ -35,6 +37,12 @@ public final class ConfigManager {
     private static void markChanged(ModConfig config) {
         if (NeedsNotNecessities.MOD_ID.equals(config.getModId())) {
             GENERATION.incrementAndGet();
+            if (config.getType() == ModConfig.Type.SERVER) {
+                var server = ServerLifecycleHooks.getCurrentServer();
+                if (server != null) {
+                    server.execute(() -> BaseHealthService.applyConfiguredBaseToOnlinePlayers(server));
+                }
+            }
         }
     }
 }

@@ -31,6 +31,7 @@ class PlayerSurvivalDataTest {
         original.markCombat(777L);
         original.setPendingDeathHealthReset(true);
         original.setPendingRespawnPenaltyMessage(true);
+        original.setBaseHealthAdjustment(20.0D, 30.0D);
         original.setActiveMeal(new ActiveMealData(
                 ResourceLocation.fromNamespaceAndPath("minecraft", "beef"),
                 "Steak",
@@ -54,6 +55,9 @@ class PlayerSurvivalDataTest {
         assertEquals(1.25D, restored.computedScalarModifiers().get(scalarId));
         assertTrue(restored.pendingDeathHealthReset());
         assertTrue(restored.pendingRespawnPenaltyMessage());
+        assertTrue(restored.hasBaseHealthAdjustment());
+        assertEquals(20.0D, restored.originalBaseHealth());
+        assertEquals(30.0D, restored.appliedBaseHealth());
         assertEquals(777L, restored.lastCombatGameTick());
         assertTrue(restored.activeMeal().isPresent());
         assertEquals("Steak", restored.activeMeal().orElseThrow().displayName());

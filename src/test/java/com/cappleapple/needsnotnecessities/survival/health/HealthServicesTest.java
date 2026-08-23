@@ -5,19 +5,49 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cappleapple.needsnotnecessities.config.BaseHealthMode;
-import com.cappleapple.needsnotnecessities.modifier.ModifierOperation;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import org.junit.jupiter.api.Test;
 
 class HealthServicesTest {
     @Test
-    void baseHealthModesProduceCorrectAttributeOperations() {
-        var additive = BaseHealthService.createModifier(BaseHealthMode.ADD, 10.0D);
-        assertEquals(10.0D, additive.amount());
-        assertEquals(ModifierOperation.ADD, additive.operation());
+    void baseHealthModesTransformTheAttributeBaseDirectly() {
+        assertEquals(30.0D, BaseHealthService.configuredBaseValue(20.0D, BaseHealthMode.ADD, 10.0D));
+        assertEquals(30.0D, BaseHealthService.configuredBaseValue(20.0D, BaseHealthMode.MULTIPLY, 1.5D));
+    }
 
-        var multiplied = BaseHealthService.createModifier(BaseHealthMode.MULTIPLY, 1.5D);
-        assertEquals(0.5D, multiplied.amount());
-        assertEquals(ModifierOperation.MULTIPLY_BASE, multiplied.operation());
+    @Test
+    void repeatedReloadsReuseTheOriginalBaseWithoutCompounding() {
+        assertEquals(20.0D, BaseHealthService.originalBaseValue(30.0D, true, 20.0D, 30.0D));
+        assertEquals(30.0D, BaseHealthService.configuredBaseValue(
+                BaseHealthService.originalBaseValue(30.0D, true, 20.0D, 30.0D),
+                BaseHealthMode.ADD,
+                10.0D));
+    }
+
+    @Test
+    void externallyReplacedBaseBecomesTheNewUnadjustedBase() {
+        assertEquals(40.0D, BaseHealthService.originalBaseValue(40.0D, true, 20.0D, 30.0D));
+    }
+
+    @Test
+    void configuredBaseIsVisibleBeforeVanillaModifierCalculation() {
+        Holder<Attribute> attribute = Holder.direct(new RangedAttribute("test.max_health", 20.0D, 1.0D, 1024.0D));
+        AttributeInstance instance = new AttributeInstance(attribute, ignored -> {
+        });
+
+        instance.setBaseValue(BaseHealthService.configuredBaseValue(20.0D, BaseHealthMode.ADD, 10.0D));
+        instance.addTransientModifier(new AttributeModifier(
+                ResourceLocation.fromNamespaceAndPath("test", "percentage_bonus"),
+                0.5D,
+                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+
+        assertEquals(30.0D, instance.getBaseValue());
+        assertEquals(45.0D, instance.getValue());
     }
 
     @Test

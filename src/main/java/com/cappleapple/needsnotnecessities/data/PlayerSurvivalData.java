@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
 public final class PlayerSurvivalData implements INBTSerializable<CompoundTag> {
-    public static final int CURRENT_SCHEMA_VERSION = 4;
+    public static final int CURRENT_SCHEMA_VERSION = 5;
 
     private boolean initialized;
     private long biologicalAgeTicks;
@@ -25,6 +25,9 @@ public final class PlayerSurvivalData implements INBTSerializable<CompoundTag> {
     private long lastCombatGameTick = -1L;
     private boolean pendingDeathHealthReset;
     private boolean pendingRespawnPenaltyMessage;
+    private boolean hasBaseHealthAdjustment;
+    private double originalBaseHealth;
+    private double appliedBaseHealth;
 
     public boolean initialized() {
         return initialized;
@@ -149,6 +152,33 @@ public final class PlayerSurvivalData implements INBTSerializable<CompoundTag> {
         this.pendingRespawnPenaltyMessage = pendingRespawnPenaltyMessage;
     }
 
+    public boolean hasBaseHealthAdjustment() {
+        return hasBaseHealthAdjustment;
+    }
+
+    public double originalBaseHealth() {
+        return originalBaseHealth;
+    }
+
+    public double appliedBaseHealth() {
+        return appliedBaseHealth;
+    }
+
+    public void setBaseHealthAdjustment(double originalBaseHealth, double appliedBaseHealth) {
+        if (!Double.isFinite(originalBaseHealth) || !Double.isFinite(appliedBaseHealth)) {
+            throw new IllegalArgumentException("Base-health values must be finite");
+        }
+        hasBaseHealthAdjustment = true;
+        this.originalBaseHealth = originalBaseHealth;
+        this.appliedBaseHealth = appliedBaseHealth;
+    }
+
+    public void clearBaseHealthAdjustment() {
+        hasBaseHealthAdjustment = false;
+        originalBaseHealth = 0.0D;
+        appliedBaseHealth = 0.0D;
+    }
+
     public PlayerSurvivalData copy() {
         PlayerSurvivalData copy = new PlayerSurvivalData();
         copy.initialized = initialized;
@@ -163,6 +193,9 @@ public final class PlayerSurvivalData implements INBTSerializable<CompoundTag> {
         copy.lastCombatGameTick = lastCombatGameTick;
         copy.pendingDeathHealthReset = pendingDeathHealthReset;
         copy.pendingRespawnPenaltyMessage = pendingRespawnPenaltyMessage;
+        copy.hasBaseHealthAdjustment = hasBaseHealthAdjustment;
+        copy.originalBaseHealth = originalBaseHealth;
+        copy.appliedBaseHealth = appliedBaseHealth;
         return copy;
     }
 
@@ -184,6 +217,10 @@ public final class PlayerSurvivalData implements INBTSerializable<CompoundTag> {
         root.putLong("last_combat_game_tick", lastCombatGameTick);
         root.putBoolean("pending_death_health_reset", pendingDeathHealthReset);
         root.putBoolean("pending_respawn_penalty_message", pendingRespawnPenaltyMessage);
+        if (hasBaseHealthAdjustment) {
+            root.putDouble("original_base_health", originalBaseHealth);
+            root.putDouble("applied_base_health", appliedBaseHealth);
+        }
         return root;
     }
 
@@ -209,6 +246,18 @@ public final class PlayerSurvivalData implements INBTSerializable<CompoundTag> {
                 : -1L;
         pendingDeathHealthReset = root.getBoolean("pending_death_health_reset");
         pendingRespawnPenaltyMessage = root.getBoolean("pending_respawn_penalty_message");
+        if (root.contains("original_base_health", Tag.TAG_ANY_NUMERIC)
+                && root.contains("applied_base_health", Tag.TAG_ANY_NUMERIC)) {
+            double restoredOriginalBaseHealth = root.getDouble("original_base_health");
+            double restoredAppliedBaseHealth = root.getDouble("applied_base_health");
+            if (Double.isFinite(restoredOriginalBaseHealth) && Double.isFinite(restoredAppliedBaseHealth)) {
+                setBaseHealthAdjustment(restoredOriginalBaseHealth, restoredAppliedBaseHealth);
+            } else {
+                clearBaseHealthAdjustment();
+            }
+        } else {
+            clearBaseHealthAdjustment();
+        }
     }
 
     private static ListTag writeDoubleMap(Map<ResourceLocation, Double> values) {

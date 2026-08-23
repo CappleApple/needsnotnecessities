@@ -9,6 +9,7 @@ import com.cappleapple.needsnotnecessities.survival.state.StateDefinitionManager
 import com.cappleapple.needsnotnecessities.survival.state.StateTrackService;
 import com.cappleapple.needsnotnecessities.survival.state.SurvivalStateIds;
 import com.cappleapple.needsnotnecessities.survival.health.PassiveRegenerationService;
+import com.cappleapple.needsnotnecessities.survival.health.BaseHealthService;
 import com.cappleapple.needsnotnecessities.survival.hunger.HungerService;
 import com.cappleapple.needsnotnecessities.survival.rest.RestService;
 import com.cappleapple.needsnotnecessities.survival.rest.SleepRulesService;
@@ -32,6 +33,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
@@ -48,6 +50,7 @@ public final class SurvivalEvents {
     public static void register(IEventBus gameBus) {
         gameBus.addListener(SurvivalEvents::onAddReloadListeners);
         gameBus.addListener(SurvivalEvents::onTagsUpdated);
+        gameBus.addListener(SurvivalEvents::onDatapackSync);
         gameBus.addListener(SurvivalEvents::onPlayerLogin);
         gameBus.addListener(SurvivalEvents::onPlayerLogout);
         gameBus.addListener(SurvivalEvents::onPlayerClone);
@@ -77,9 +80,14 @@ public final class SurvivalEvents {
         }
     }
 
+    private static void onDatapackSync(OnDatapackSyncEvent event) {
+        event.getRelevantPlayers().forEach(BaseHealthService::applyConfiguredBase);
+    }
+
     private static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             PlayerSurvivalData data = player.getData(ModAttachments.PLAYER_SURVIVAL);
+            BaseHealthService.applyConfiguredBase(player);
             boolean firstInitialization = ensureInitialized(data);
             StateTrackService.clampEnabledTracks(data);
             SurvivalModifierService.forceRecompute(player, StateTrackService.gatherAllModifiers(player, data));
@@ -131,6 +139,7 @@ public final class SurvivalEvents {
         }
         PlayerSurvivalData data = player.getData(ModAttachments.PLAYER_SURVIVAL);
         ensureInitialized(data);
+        BaseHealthService.applyConfiguredBase(player);
         SurvivalModifierService.forceRecompute(player, StateTrackService.gatherAllModifiers(player, data));
         if (data.pendingDeathHealthReset()) {
             float health = (float) (player.getMaxHealth() * ServerConfig.INSTANCE.respawnHealthPercentage.getAsDouble());
@@ -156,6 +165,7 @@ public final class SurvivalEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             PlayerSurvivalData data = player.getData(ModAttachments.PLAYER_SURVIVAL);
             ensureInitialized(data);
+            BaseHealthService.applyConfiguredBase(player);
             SurvivalModifierService.forceRecompute(player, StateTrackService.gatherAllModifiers(player, data));
             NotificationService.initialize(player, data);
             SurvivalSnapshotService.sync(player, data);

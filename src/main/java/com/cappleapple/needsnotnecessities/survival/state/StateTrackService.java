@@ -7,7 +7,6 @@ import com.cappleapple.needsnotnecessities.data.PlayerSurvivalData;
 import com.cappleapple.needsnotnecessities.modifier.ModifierOperation;
 import com.cappleapple.needsnotnecessities.modifier.SurvivalModifier;
 import com.cappleapple.needsnotnecessities.survival.SurvivalModule;
-import com.cappleapple.needsnotnecessities.survival.health.BaseHealthService;
 import com.cappleapple.needsnotnecessities.survival.comfort.ComfortService;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +109,6 @@ public final class StateTrackService {
         if (ServerConfig.INSTANCE.isEnabled(SurvivalModule.ACTIVE_MEAL)) {
             data.activeMeal().ifPresent(meal -> result.addAll(meal.modifiers()));
         }
-        BaseHealthService.configuredModifier().ifPresent(result::add);
         result.addAll(ComfortService.gatherModifiers(data));
         return List.copyOf(result);
     }

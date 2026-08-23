@@ -192,7 +192,7 @@ public final class ServerConfig {
         builder.push("base_health");
         baseHealthMode = builder.defineEnum("mode", BaseHealthMode.ADD);
         baseHealthAmount = rangedDouble(builder, "amount", 0.0D, -1024.0D, 1024.0D,
-                "Amount added to base max health, or multiplier used in MULTIPLY mode.");
+                "Amount added directly to the player's max-health base value, or multiplier applied directly to that base in MULTIPLY mode.");
         initialHealthPercentage = rangedDouble(builder, "initial_health_percentage", 1.0D, 0.01D, 1.0D,
                 "Fraction of current maximum health assigned when this mod first initializes a player.");
         builder.pop();

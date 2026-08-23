@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.5 - 2026-08-22
+
+### Changed
+
+- The Base Health server option now adjusts each player's max-health base value on load, reload, and join, before any attribute modifiers are calculated.
+
 ## 1.1.4 - 2026-08-21
 
 ### Fixed
