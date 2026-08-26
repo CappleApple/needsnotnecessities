@@ -2,6 +2,7 @@ package com.cappleapple.needsnotnecessities.client;
 
 import com.cappleapple.needsnotnecessities.network.SurvivalNotificationPayload;
 import com.cappleapple.needsnotnecessities.network.SurvivalSnapshotPayload;
+import com.cappleapple.needsnotnecessities.network.SilentHealthAdjustmentPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.network.chat.Component;
@@ -24,5 +25,16 @@ public final class ClientPayloadHandler {
                 SURVIVAL_TOAST,
                 Component.literal(payload.title()),
                 Component.literal(payload.message()));
+    }
+
+    public static void handleSilentHealthAdjustment(SilentHealthAdjustmentPayload payload, IPayloadContext context) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null) {
+            return;
+        }
+        minecraft.player.setHealth(SilentHealthAdjustmentPayload.adjustedClientHealth(
+                minecraft.player.getHealth(),
+                payload.reduction(),
+                payload.targetHealth()));
     }
 }

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.6 - 2026-08-26
+
+### Changed
+
+- Absorption now scales with player max health using the existing health-effect scaling setting and reference health.
+- Foods marked as always edible, including golden apples and suspicious stew, can now be eaten when the custom Hunger state is full.
+
+### Fixed
+
+- Losing a max-health bonus from this mod, vanilla, or another mod no longer triggers the client's damage flash and camera tilt when health is clamped to the new maximum.
+
 ## 1.1.5 - 2026-08-22
 
 ### Changed

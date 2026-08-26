@@ -27,6 +27,7 @@ public final class BaseHealthService {
         if (maxHealth == null) {
             return;
         }
+        MaxHealthTransitionService.Snapshot transition = MaxHealthTransitionService.capture(player);
 
         // Remove the transient modifier used before base health became a true base-value adjustment.
         maxHealth.removeModifier(MODIFIER_ID);
@@ -35,7 +36,7 @@ public final class BaseHealthService {
         ServerConfig config = ServerConfig.INSTANCE;
         if (!config.isEnabled(SurvivalModule.BASE_HEALTH)) {
             restoreOriginalBase(maxHealth, data);
-            clampCurrentHealth(player);
+            MaxHealthTransitionService.finish(player, transition);
             return;
         }
 
@@ -52,7 +53,7 @@ public final class BaseHealthService {
 
         maxHealth.setBaseValue(configuredBase);
         data.setBaseHealthAdjustment(originalBase, configuredBase);
-        clampCurrentHealth(player);
+        MaxHealthTransitionService.finish(player, transition);
     }
 
     public static void applyConfiguredBaseToOnlinePlayers(MinecraftServer server) {
@@ -92,7 +93,4 @@ public final class BaseHealthService {
         return Math.abs(first - second) <= 1.0E-9D * scale;
     }
 
-    private static void clampCurrentHealth(ServerPlayer player) {
-        player.setHealth(Math.min(player.getHealth(), player.getMaxHealth()));
-    }
 }

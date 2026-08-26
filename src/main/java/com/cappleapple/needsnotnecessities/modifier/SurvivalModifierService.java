@@ -5,6 +5,7 @@ import com.cappleapple.needsnotnecessities.data.ModAttachments;
 import com.cappleapple.needsnotnecessities.data.PlayerSurvivalData;
 import com.cappleapple.needsnotnecessities.config.ServerConfig;
 import com.cappleapple.needsnotnecessities.survival.SurvivalModule;
+import com.cappleapple.needsnotnecessities.survival.health.MaxHealthTransitionService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ public final class SurvivalModifierService {
         }
 
         PlayerSurvivalData data = player.getData(ModAttachments.PLAYER_SURVIVAL);
+        MaxHealthTransitionService.Snapshot healthTransition = MaxHealthTransitionService.capture(player);
         removePreviouslyApplied(player, data.appliedAttributeModifiers());
 
         Map<ResourceLocation, ResourceLocation> applied = new LinkedHashMap<>();
@@ -91,7 +93,7 @@ public final class SurvivalModifierService {
         scalars.forEach((target, accumulator) -> scalarValues.put(target, accumulator.value()));
         data.replaceAppliedAttributeModifiers(applied);
         data.replaceComputedScalarModifiers(scalarValues);
-        player.setHealth(Math.min(player.getHealth(), player.getMaxHealth()));
+        MaxHealthTransitionService.finish(player, healthTransition);
         LAST_PLAN_HASH.put(player.getUUID(), planHash);
     }
 

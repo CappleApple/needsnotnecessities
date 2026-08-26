@@ -18,7 +18,7 @@ abstract class PlayerMixin {
             CallbackInfoReturnable<Boolean> callback) {
         if (ServerConfig.INSTANCE.isEnabled(SurvivalModule.HUNGER)) {
             callback.setReturnValue((Object) this instanceof ServerPlayer player
-                    ? HungerService.canEat(player)
+                    ? HungerService.canEat(player, canAlwaysEat)
                     : true);
         }
     }

@@ -1,7 +1,9 @@
 package com.cappleapple.needsnotnecessities.survival.hunger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import net.minecraft.resources.ResourceLocation;
@@ -38,5 +40,12 @@ class HungerServiceTest {
         assertEquals(1.0D, HungerService.decayMultiplier(false, 2.0D));
         assertEquals(2.0D, HungerService.decayMultiplier(true, 2.0D));
         assertThrows(IllegalArgumentException.class, () -> HungerService.decayMultiplier(true, -1.0D));
+    }
+
+    @Test
+    void vanillaAlwaysEdibleFoodsBypassCustomFullness() {
+        assertTrue(HungerService.canEat(true, false));
+        assertTrue(HungerService.canEat(false, true));
+        assertFalse(HungerService.canEat(false, false));
     }
 }

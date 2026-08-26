@@ -64,6 +64,14 @@ public final class HungerService {
                 ServerConfig.INSTANCE.hungerEatBelowStagePercentage.getAsDouble());
     }
 
+    public static boolean canEat(ServerPlayer player, boolean canAlwaysEat) {
+        return canEat(canAlwaysEat, canEat(player));
+    }
+
+    static boolean canEat(boolean canAlwaysEat, boolean customHungerAllowsFood) {
+        return canAlwaysEat || customHungerAllowsFood;
+    }
+
     public static void consume(ServerPlayer player, double foodHours) {
         if (!ServerConfig.INSTANCE.isEnabled(SurvivalModule.HUNGER)
                 || player.isCreative()

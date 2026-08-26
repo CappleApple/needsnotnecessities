@@ -18,4 +18,11 @@ class HealthEffectScalingServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> HealthEffectScalingService.scaleAmount(6.0F, 40.0F, 0.0D));
     }
+
+    @Test
+    void currentAbsorptionKeepsItsFilledFractionWhenMaximumHealthChanges() {
+        assertEquals(4.0F, AbsorptionScalingService.rescaleAmount(8.0F, 16.0F, 8.0F));
+        assertEquals(12.0F, AbsorptionScalingService.rescaleAmount(6.0F, 8.0F, 16.0F));
+        assertEquals(0.0F, AbsorptionScalingService.rescaleAmount(0.0F, 0.0F, 8.0F));
+    }
 }

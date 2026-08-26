@@ -5,7 +5,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
 public final class SurvivalNetwork {
-    private static final String PROTOCOL_VERSION = "1";
+    private static final String PROTOCOL_VERSION = "2";
 
     private SurvivalNetwork() {
     }
@@ -24,5 +24,9 @@ public final class SurvivalNetwork {
                 SurvivalNotificationPayload.TYPE,
                 SurvivalNotificationPayload.STREAM_CODEC,
                 ClientPayloadHandler::handleNotification);
+        registrar.playToClient(
+                SilentHealthAdjustmentPayload.TYPE,
+                SilentHealthAdjustmentPayload.STREAM_CODEC,
+                ClientPayloadHandler::handleSilentHealthAdjustment);
     }
 }

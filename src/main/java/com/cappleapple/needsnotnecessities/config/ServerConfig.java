@@ -199,10 +199,10 @@ public final class ServerConfig {
 
         builder.push("health_effects");
         scaleHealthEffectsWithMaxHealth = builder
-                .comment("Scale Instant Health and Regeneration healing for players as a percentage of max health.")
+                .comment("Scale Instant Health, Regeneration, and Absorption for players as a percentage of max health.")
                 .define("scale_with_max_health", true);
         healthEffectReferenceMaxHealth = rangedDouble(builder, "reference_max_health", 20.0D, 0.01D, 1_000_000.0D,
-                "Max-health value at which healing effects retain their vanilla healing amount.");
+                "Max-health value at which healing effects and Absorption retain their vanilla amounts.");
         builder.pop();
 
         builder.push("regeneration");
