@@ -57,6 +57,7 @@ public final class SurvivalCommands {
                                 .executes(context -> mealAnalyze(
                                         context.getSource(), context.getSource().getPlayerOrException()))))
                 .then(Commands.literal("reset")
+                        .executes(context -> reset(context.getSource(), context.getSource().getPlayerOrException()))
                         .then(Commands.argument("player", EntityArgument.player())
                                 .executes(context -> reset(
                                         context.getSource(), EntityArgument.getPlayer(context, "player")))))

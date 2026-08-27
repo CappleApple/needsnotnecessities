@@ -6,6 +6,14 @@ Build and automated tests:
 .\gradlew.bat clean test build
 ```
 
+Run the automated command and respawn lifecycle tests in an isolated GameTest world:
+
+```powershell
+.\gradlew.bat runGameTestServer
+```
+
+These tests exercise real command dispatch and player replacement, including a later respawn handler that refills health, the outbound health packet, non-death End returns, and disabled death penalties. GameTest classes are excluded from the released mod JAR.
+
 Run the dedicated-server smoke test with `run/eula.txt` accepted:
 
 ```powershell
@@ -42,6 +50,8 @@ The manual pass should cover:
 - Confirm `meal.maximum_bonuses` defaults to 5 and lowering it deterministically caps distinct combined modifier lines after numeric stacking.
 - Add a datapack meal rule for an item or `#c:food/meat`, run `/nnn reload`, and verify the new trait/bonus appears without a restart.
 - Die once while both Hunger and Thirst are above their configured post-death levels and verify `You awaken weak, hungry, and parched.` appears. Die when either need is already at/below its post-death value and verify it does not. Change/blank the server-config message and repeat.
+- Set `death.respawn_health_percentage` to `0.25`, die, and verify health stays at zero until respawning, then becomes 25% of the new maximum (at least one health point). Repeat with max-health bonuses, `keepInventory` enabled, and a non-default Base Health setting. Heal afterward and confirm the percentage is not reapplied. Disable `death.enabled` and verify vanilla respawn health is retained; returning through the End exit without dying must preserve existing health.
+- Run `/nnn reset` and `/needs_not_necessities reset` as a player and verify only that player's survival data resets. Run `/nnn reset <other player>` and verify only the explicit target resets. From the server console, verify a player argument is still required.
 - Test death, non-death End return, dimension changes, relog, and a full server restart for persistence and non-duplicating attribute modifiers.
 - Override a state with every datapack notification type, combinations, and no `notifications` array. Verify outputs occur only on entering that state. The bundled defaults should play the three lowest-state warning sounds; entering each highest Hunger, Thirst, or Rest state should show its full-state action-bar message and play its configured sound.
 - Install Quality Food 1.21.1, consume none/iron/gold/diamond-quality copies of the same result item, and confirm quality primarily extends duration with only the configured capped strength increase. Remove Quality Food and confirm startup still succeeds.

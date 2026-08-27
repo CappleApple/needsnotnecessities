@@ -10,6 +10,7 @@ import com.cappleapple.needsnotnecessities.survival.state.StateTrackService;
 import com.cappleapple.needsnotnecessities.survival.state.SurvivalStateIds;
 import com.cappleapple.needsnotnecessities.survival.health.PassiveRegenerationService;
 import com.cappleapple.needsnotnecessities.survival.health.BaseHealthService;
+import com.cappleapple.needsnotnecessities.survival.health.RespawnHealthService;
 import com.cappleapple.needsnotnecessities.survival.hunger.HungerService;
 import com.cappleapple.needsnotnecessities.survival.rest.RestService;
 import com.cappleapple.needsnotnecessities.survival.rest.SleepRulesService;
@@ -116,11 +117,12 @@ public final class SurvivalEvents {
                 ? event.getOriginal().getData(ModAttachments.PLAYER_SURVIVAL).copy()
                 : new PlayerSurvivalData();
         ensureInitialized(copied);
+        // Health is queued by the actual respawn event, never by cloning or an inherited pending flag.
+        copied.setPendingDeathHealthReset(false);
         if (event.isWasDeath() && ServerConfig.INSTANCE.deathPenaltiesEnabled.getAsBoolean()) {
             double previousHunger = copied.statePosition(SurvivalStateIds.HUNGER);
             double previousThirst = copied.statePosition(SurvivalStateIds.THIRST);
             applyDeathPolicies(copied);
-            copied.setPendingDeathHealthReset(true);
             copied.setPendingRespawnPenaltyMessage(RespawnPenaltyService.shouldSendMessage(
                     previousHunger,
                     copied.statePosition(SurvivalStateIds.HUNGER),
@@ -141,12 +143,7 @@ public final class SurvivalEvents {
         ensureInitialized(data);
         BaseHealthService.applyConfiguredBase(player);
         SurvivalModifierService.forceRecompute(player, StateTrackService.gatherAllModifiers(player, data));
-        if (data.pendingDeathHealthReset()) {
-            float health = (float) (player.getMaxHealth() * ServerConfig.INSTANCE.respawnHealthPercentage.getAsDouble());
-            float minimum = Math.min(1.0F, player.getMaxHealth());
-            player.setHealth(Math.clamp(health, minimum, player.getMaxHealth()));
-            data.setPendingDeathHealthReset(false);
-        }
+        data.setPendingDeathHealthReset(!event.isEndConquered() && ServerConfig.INSTANCE.deathPenaltiesEnabled.getAsBoolean());
         if (data.pendingRespawnPenaltyMessage()) {
             String message = ServerConfig.INSTANCE.respawnPenaltyMessage.get();
             if (!message.isBlank()) {
@@ -196,6 +193,7 @@ public final class SurvivalEvents {
             }
         }
         PassiveRegenerationService.tick(player, data);
+        RespawnHealthService.applyPending(player, data);
     }
 
     private static void onFoodFinished(LivingEntityUseItemEvent.Finish event) {

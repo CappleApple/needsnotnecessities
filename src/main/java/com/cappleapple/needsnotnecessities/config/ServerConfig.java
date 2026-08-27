@@ -215,7 +215,7 @@ public final class ServerConfig {
         builder.push("death");
         deathPenaltiesEnabled = builder.define("enabled", true);
         respawnHealthPercentage = rangedDouble(builder, "respawn_health_percentage", 0.25D, 0.01D, 1.0D,
-                "Fraction of current maximum health assigned after a death respawn.");
+                "Fraction of current maximum health assigned on the first live tick after a death respawn finishes.");
         respawnPenaltyMessage = builder
                 .comment("Chat message sent when both Hunger and Thirst are reduced by death. Leave blank to disable.")
                 .define("respawn_penalty_message", "You awaken weak, hungry, and parched.");

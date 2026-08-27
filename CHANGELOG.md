@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.7 - 2026-08-27
+
+### Fixed
+
+- `/nnn reset` and `/needs_not_necessities reset` now reset the command sender when no player argument is provided.
+- The post-death health percentage now applies once on the replacement player's first live tick, after respawn handlers finish, so later respawn setup cannot refill it to full health.
+
 ## 1.1.6 - 2026-08-26
 
 ### Changed
