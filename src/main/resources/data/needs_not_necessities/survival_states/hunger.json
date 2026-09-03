@@ -84,7 +84,7 @@
       "notifications": [
         {
           "type": "ACTION_BAR",
-          "message": "Your hunger is full."
+          "message": "You feel stuffed"
         },
         {
           "type": "SOUND",

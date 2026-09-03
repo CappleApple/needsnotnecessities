@@ -42,7 +42,7 @@
       "notifications": [
         {
           "type": "ACTION_BAR",
-          "message": "Your rest is full."
+          "message": "You feel well rested"
         },
         {
           "type": "SOUND",

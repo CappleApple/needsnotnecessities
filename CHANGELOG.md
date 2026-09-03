@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.8 - 2026-09-03
+
+### Changed
+
+- Updated the highest Hunger, Thirst, and Rest action-bar messages to use short flavor text.
+
 ## 1.1.7 - 2026-08-27
 
 ### Fixed

@@ -33,7 +33,7 @@
       "notifications": [
         {
           "type": "ACTION_BAR",
-          "message": "Your thirst is full."
+          "message": "You feel hydrated"
         },
         {
           "type": "SOUND",
