@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.9 - 2026-09-09
+
+### Changed
+
+- When Rest is enabled, phantom spawn attempts now depend on the player's lowest configured Rest stage (Exhausted by default), while retaining normal environmental checks and game rules. Disabling Rest restores vanilla insomnia behavior.
+
 ## 1.1.8 - 2026-09-03
 
 ### Changed

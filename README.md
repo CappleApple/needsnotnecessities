@@ -8,6 +8,8 @@ The client requires [Panels Not Screens](https://github.com/CappleApple/panelsno
 
 Comfort classifications are generated from registered block IDs at datapack reload time and cached for runtime scans. A separately generated JSON server config supplies tunable regex groups for beds, chairs, benches, sofas, tables, lighting, and hearths; `{}` disables automatic matching entirely. Explicit datapack block/tag sources always suppress regex matches for the same block, so pack authors retain final control. Comfort scans include nearby moving and rotated Sable sub-levels, allowing those same definitions to work on Create Aeronautics vehicles without making Sable a required dependency. Active Meal defaults rely on common food tags rather than ingredient-specific Baked Potato or Cooked Rice overrides.
 
+When Rest is enabled, phantoms can spawn around survival and adventure players in the lowest configured Rest stage (Exhausted by default). Higher Rest stages prevent these spawn attempts. The normal spawn interval, darkness, sky access, altitude, local difficulty, and `doInsomnia`/`doMobSpawning` rules still apply. This does not change the recorded Time Since Last Rest statistic; disabling Rest restores vanilla insomnia behavior.
+
 ## Development
 
 Requirements:

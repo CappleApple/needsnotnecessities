@@ -6,13 +6,13 @@ Build and automated tests:
 .\gradlew.bat clean test build
 ```
 
-Run the automated command and respawn lifecycle tests in an isolated GameTest world:
+Run the automated command, respawn lifecycle, and phantom spawning tests in an isolated GameTest world:
 
 ```powershell
 .\gradlew.bat runGameTestServer
 ```
 
-These tests exercise real command dispatch and player replacement, including a later respawn handler that refills health, the outbound health packet, non-death End returns, and disabled death penalties. GameTest classes are excluded from the released mod JAR.
+These tests exercise real command dispatch and player replacement, including a later respawn handler that refills health, the outbound health packet, non-death End returns, and disabled death penalties. Phantom tests run the real vanilla spawner and check actual entities, the lowest-stage boundary, recovery, disabled Rest, unchanged insomnia statistics, game rules, daylight, roofs, altitude, difficulty, game modes, existing mod denials, and missing state initialization. GameTest classes are excluded from the released mod JAR.
 
 Run the dedicated-server smoke test with `run/eula.txt` accepted:
 
@@ -27,6 +27,7 @@ The manual pass should cover:
 - With the default `hunger.eat_below_stage_percentage = 90`, verify food can be eaten in each of the lowest four default Hunger stages but not in the best stage. Repeat around custom datapack stage counts and with 0%/100% settings.
 - Disable Hunger only, restart/reload the server config as required, and verify vanilla hunger behavior/UI returns while thirst, rest, meals, comfort, and regeneration remain functional.
 - Sleep without completing a time skip and confirm continuous partial Rest recovery. With the default 50% Rest threshold, verify Exhausted and Tired players may sleep while Neutral, Rested, and Well Rested players receive the not-tired message.
+- At night under open sky above sea level, enter Exhausted with `/nnn rest set @s 0` and verify phantoms can appear on normal spawn attempts even after a recent sleep. Recover into Tired and verify new Rest-based spawns stop. Repeat with custom Rest stage IDs/order, and with Rest disabled to confirm vanilla insomnia returns. `doInsomnia=false` and `doMobSpawning=false` must still prevent natural phantom spawning.
 - Set `playersSleepingPercentage` to several values. Verify enough daytime sleepers skip to tick 13000 (night) and enough nighttime sleepers skip to the next day. Every player who was actually sleeping for the completed skip should immediately reach the best configured Rest state, receive its modifiers, and see the updated panel; awake players must remain unchanged. Then test `rest.allow_daytime_sleep`, `rest.require_tired_to_sleep`, `rest.sleep_below_stage_percentage`, and `rest.daytime_sleep_skips_to_night`; the final option should make daytime sleepers skip to the next day when false.
 - Drink water, regular/splash/lingering potions, Farmer's Delight drinks, common-tag drinks, and tagged alcohol; confirm normal drinks improve thirst and alcohol uses its separate adjustment.
 - Verify drinks work in every default Thirst stage, including the best stage. Confirm non-drink use items remain unaffected.

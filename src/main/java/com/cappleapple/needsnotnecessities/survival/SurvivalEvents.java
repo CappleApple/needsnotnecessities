@@ -13,6 +13,7 @@ import com.cappleapple.needsnotnecessities.survival.health.BaseHealthService;
 import com.cappleapple.needsnotnecessities.survival.health.RespawnHealthService;
 import com.cappleapple.needsnotnecessities.survival.hunger.HungerService;
 import com.cappleapple.needsnotnecessities.survival.rest.RestService;
+import com.cappleapple.needsnotnecessities.survival.rest.PhantomSpawnService;
 import com.cappleapple.needsnotnecessities.survival.rest.SleepRulesService;
 import com.cappleapple.needsnotnecessities.survival.thirst.ThirstService;
 import com.cappleapple.needsnotnecessities.survival.comfort.ComfortEffectManager;
@@ -62,6 +63,7 @@ public final class SurvivalEvents {
         gameBus.addListener(SleepRulesService::onCanPlayerSleep);
         gameBus.addListener(SleepRulesService::onCanContinueSleeping);
         gameBus.addListener(SleepRulesService::onSleepFinished);
+        gameBus.addListener(PhantomSpawnService::onPlayerSpawnPhantoms);
         gameBus.addListener(SurvivalEvents::onLivingDamaged);
         gameBus.addListener(SurvivalEvents::onPlayerAttack);
         gameBus.addListener(SurvivalCommands::register);
