@@ -2,6 +2,7 @@ package com.cappleapple.needsnotnecessities.mixin;
 
 import com.cappleapple.needsnotnecessities.config.ServerConfig;
 import com.cappleapple.needsnotnecessities.survival.SurvivalModule;
+import com.cappleapple.needsnotnecessities.survival.food.PlacedFoodConsumption;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,6 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FoodData.class)
 abstract class FoodDataMixin {
+    @Inject(method = "add", at = @At("TAIL"))
+    private void needsNotNecessities$recordPlacedFood(int nutrition, float saturation, CallbackInfo callback) {
+        PlacedFoodConsumption.record((FoodData) (Object) this, nutrition, saturation);
+    }
+
     @Shadow
     private int foodLevel;
 

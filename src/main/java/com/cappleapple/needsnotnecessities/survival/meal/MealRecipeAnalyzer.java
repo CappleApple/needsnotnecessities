@@ -1,6 +1,7 @@
 package com.cappleapple.needsnotnecessities.survival.meal;
 
 import com.cappleapple.needsnotnecessities.NeedsNotNecessities;
+import com.cappleapple.needsnotnecessities.survival.food.PlacedFoodResolver;
 import com.cappleapple.needsnotnecessities.config.ServerConfig;
 import com.cappleapple.needsnotnecessities.compat.QualityFoodCompat;
 import com.cappleapple.needsnotnecessities.modifier.ModifierOperation;
@@ -8,16 +9,12 @@ import com.cappleapple.needsnotnecessities.modifier.SurvivalModifier;
 import com.cappleapple.needsnotnecessities.modifier.SurvivalModifierService;
 import com.cappleapple.needsnotnecessities.api.provider.SurvivalProviderRegistry;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 /**
@@ -26,7 +23,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
  */
 public final class MealRecipeAnalyzer {
     private static RecipeManager indexedManager;
-    private static Map<Item, List<RecipeHolder<?>>> recipesByOutput = Map.of();
+    private static MealRecipeIndex recipeIndex;
 
     private MealRecipeAnalyzer() {
     }
@@ -41,23 +38,19 @@ public final class MealRecipeAnalyzer {
                         .map(definition -> new MealIngredientResolver.Definition<>(definition.id(), definition))
                         .toList(),
                 MealRecipeAnalyzer::recipeIngredients,
-                stack -> stack.getFoodProperties(player) != null);
+                stack -> stack.getFoodProperties(player) != null
+                        || PlacedFoodResolver.isPlacedFood(stack));
 
-        RecipeHolder<?> recipe = bestRecipe(eatenStack.getItem());
-        int complexity = 0;
-        if (recipe != null) {
-            complexity = directComplexity(recipe);
-            for (Ingredient ingredient : recipe.value().getIngredients()) {
-                ItemStack[] alternatives = ingredient.getItems();
-                if (alternatives.length == 0) {
-                    continue;
-                }
-                accumulator.acceptIngredient(
-                        ingredientResolver.resolveIngredient(alternatives),
-                        config.mealSameGroupDiminishingFactor.getAsDouble());
-                if (containsPreparedAlternative(alternatives)) {
-                    complexity++;
-                }
+        int complexity = recipeIndex.complexity(eatenStack.getItem());
+        for (ItemStack[] alternatives : recipeIndex.ingredientsFor(eatenStack.getItem())) {
+            if (alternatives.length == 0) {
+                continue;
+            }
+            accumulator.acceptIngredient(
+                    ingredientResolver.resolveIngredient(alternatives),
+                    config.mealSameGroupDiminishingFactor.getAsDouble());
+            if (containsPreparedAlternative(alternatives)) {
+                complexity++;
             }
         }
 
@@ -115,7 +108,7 @@ public final class MealRecipeAnalyzer {
 
     public static synchronized void clearCache() {
         indexedManager = null;
-        recipesByOutput = Map.of();
+        recipeIndex = null;
     }
 
     private static synchronized void ensureRecipeIndex(ServerPlayer player) {
@@ -123,35 +116,13 @@ public final class MealRecipeAnalyzer {
         if (indexedManager == manager) {
             return;
         }
-        Map<Item, List<RecipeHolder<?>>> index = new HashMap<>();
-        for (RecipeHolder<?> holder : manager.getRecipes()) {
-            ItemStack result = holder.value().getResultItem(player.registryAccess());
-            if (!result.isEmpty()) {
-                index.computeIfAbsent(result.getItem(), ignored -> new ArrayList<>()).add(holder);
-            }
-        }
-        index.replaceAll((item, recipes) -> List.copyOf(recipes));
-        recipesByOutput = Map.copyOf(index);
+        recipeIndex = MealRecipeIndex.build(manager, player.registryAccess());
         indexedManager = manager;
-        NeedsNotNecessities.LOGGER.debug("Indexed {} recipe outputs for Active Meal analysis", index.size());
-    }
-
-    private static RecipeHolder<?> bestRecipe(Item item) {
-        return recipesByOutput.getOrDefault(item, List.of()).stream()
-                .max(Comparator.comparingInt(MealRecipeAnalyzer::directComplexity))
-                .orElse(null);
-    }
-
-    private static int directComplexity(RecipeHolder<?> holder) {
-        int ingredients = (int) holder.value().getIngredients().stream()
-                .filter(ingredient -> !ingredient.hasNoItems())
-                .count();
-        return ingredients + (holder.value() instanceof AbstractCookingRecipe ? 1 : 0);
     }
 
     private static boolean containsPreparedAlternative(ItemStack[] alternatives) {
         for (ItemStack alternative : alternatives) {
-            if (!recipesByOutput.getOrDefault(alternative.getItem(), List.of()).isEmpty()) {
+            if (recipeIndex.contains(alternative.getItem())) {
                 return true;
             }
         }
@@ -159,14 +130,7 @@ public final class MealRecipeAnalyzer {
     }
 
     private static List<ItemStack[]> recipeIngredients(Item item) {
-        RecipeHolder<?> recipe = bestRecipe(item);
-        if (recipe == null) {
-            return List.of();
-        }
-        return recipe.value().getIngredients().stream()
-                .map(Ingredient::getItems)
-                .filter(items -> items.length > 0)
-                .toList();
+        return recipeIndex.ingredientsFor(item);
     }
 
     private static final class Accumulator {

@@ -95,6 +95,7 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             gameDirectory = project.layout.projectDirectory.dir('run/gametest')
+            systemProperty 'nnn.test.farmersDelight', providers.gradleProperty('farmersDelightTestJar').isPresent().toString()
             systemProperty 'neoforge.enabledGameTestNamespaces', "${project.mod_id},minecraft"
         }
 
@@ -148,6 +149,10 @@ configurations {
 }
 
 dependencies {
+    // Optional local compatibility fixture; never bundled or required by the release.
+    if (providers.gradleProperty('farmersDelightTestJar').isPresent()) {
+        localRuntime files(providers.gradleProperty('farmersDelightTestJar').get())
+    }
     implementation "com.cappleapple:panelsnotscreens:0.1.0"
     jarJar(api("dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:[${sable_companion_version},)")) {
         version {

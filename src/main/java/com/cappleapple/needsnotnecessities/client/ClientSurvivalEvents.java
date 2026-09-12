@@ -6,6 +6,7 @@ import com.cappleapple.needsnotnecessities.client.gui.SurvivalOverlayPanel;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -17,6 +18,7 @@ public final class ClientSurvivalEvents {
     public static void register(IEventBus gameBus) {
         gameBus.addListener(ClientSurvivalEvents::onRenderGuiLayer);
         gameBus.addListener(ClientSurvivalEvents::onClientLogout);
+        gameBus.addListener((RecipesUpdatedEvent event) -> ClientMealPreviewService.clearRecipeCache());
         gameBus.addListener(ClientSurvivalEvents::onItemTooltip);
         gameBus.addListener(ClientSurvivalEvents::onScreenInit);
         gameBus.addListener(ClientSurvivalEvents::onScreenRender);
@@ -35,6 +37,7 @@ public final class ClientSurvivalEvents {
 
     private static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientSurvivalCache.clear();
+        ClientMealPreviewService.clearRecipeCache();
     }
 
     private static void onItemTooltip(ItemTooltipEvent event) {

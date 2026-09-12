@@ -30,6 +30,8 @@ Death/clone, dimension return, first spawn, logout, and reset behavior are handl
 
 When the Hunger module is enabled, it owns the hunger timer and HUD instead of running a second system beside vanilla hunger. Food nutrition/saturation is converted into configured hunger time, while normal food use rules can still be overridden by `can_always_eat` items and the stage-percentage eating gate.
 
+Held-food finishes and placed-food bites feed the same consumption service. Server-side block interactions track actual nutrition calls, so a rejected bite, candle placement, or collected serving does not count as eating. Nutrition and saturation use the values supplied by the food rather than the change in vanilla hunger, which may already be full.
+
 Vanilla Hunger status can accelerate the custom timer. Farmer's Delight Nourishment can pause it through the optional compatibility hook.
 
 ## Thirst
@@ -56,7 +58,11 @@ When Sable/Create Aeronautics support is available, the scan can include comfort
 
 Active Meals analyze recipe ingredients recursively and turn them into temporary traits/modifiers.
 
-The analyzer caches recipe results and protects against recipe cycles. Different food groups can stack numerically; repeated ingredients from one group use the configured diminishing factor. Server activation and client tooltip prediction use the same combination rules so the preview and applied meal stay aligned.
+The analyzer caches recipe results and protects against recipe cycles. Recursion includes cake, pie, and feast items even when they cannot be eaten while held. Different food groups can stack numerically; repeated ingredients from one group use the configured diminishing factor.
+
+Farmer's Delight serving items without a native recipe receive an analysis-only link back to the food block that supplies them. The block's serving methods provide that relationship, including state-dependent servings and subclasses. Existing recipes take priority, so a food that can also be arranged into a platter keeps its normal ingredients.
+
+Server activation and client tooltip prediction share the recipe index and combination rules. Recipe reloads invalidate the caches, and previews for placed foods use the matching bite or serving. Additional non-edible recipe intermediates can be marked with the `needs_not_necessities:placed_foods` item tag.
 
 ## Health scaling
 

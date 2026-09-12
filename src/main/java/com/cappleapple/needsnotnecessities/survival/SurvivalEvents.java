@@ -25,7 +25,8 @@ import com.cappleapple.needsnotnecessities.survival.food.FoodTooltipGroupManager
 import com.cappleapple.needsnotnecessities.network.SurvivalSnapshotService;
 import com.cappleapple.needsnotnecessities.survival.notification.NotificationService;
 import com.cappleapple.needsnotnecessities.api.event.DrinkConsumedEvent;
-import com.cappleapple.needsnotnecessities.api.event.FoodConsumedEvent;
+import com.cappleapple.needsnotnecessities.survival.food.FoodConsumptionService;
+import com.cappleapple.needsnotnecessities.survival.food.PlacedFoodConsumption;
 import com.cappleapple.needsnotnecessities.api.event.PlayerSurvivalRespawnEvent;
 import com.cappleapple.needsnotnecessities.api.event.SurvivalStateUpdateEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -203,18 +204,8 @@ public final class SurvivalEvents {
             return;
         }
         FoodProperties food = event.getItem().getFoodProperties(player);
-        boolean foodModuleEnabled = ServerConfig.INSTANCE.isEnabled(SurvivalModule.HUNGER)
-                || ServerConfig.INSTANCE.isEnabled(SurvivalModule.THIRST)
-                || ServerConfig.INSTANCE.isEnabled(SurvivalModule.ACTIVE_MEAL);
-        if (food != null && foodModuleEnabled) {
-            double foodHours = HungerService.calculateFoodHours(food);
-            HungerService.consume(player, foodHours);
-            ThirstService.onFoodConsumed(player, foodHours);
-            ActiveMealService.onFoodConsumed(player, event.getItem(), foodHours);
-            if (ServerConfig.INSTANCE.isEnabled(SurvivalModule.COMPATIBILITY)) {
-                NeoForge.EVENT_BUS.post(new FoodConsumedEvent(
-                        player, event.getItem(), food.nutrition(), food.saturation(), foodHours));
-            }
+        if (food != null && !PlacedFoodConsumption.captureFinished(player, event.getItem())) {
+            FoodConsumptionService.consume(player, event.getItem(), food.nutrition(), food.saturation());
         }
         if (ServerConfig.INSTANCE.isEnabled(SurvivalModule.THIRST)) {
             ThirstService.DrinkKind drinkKind = ThirstService.classify(event.getItem());

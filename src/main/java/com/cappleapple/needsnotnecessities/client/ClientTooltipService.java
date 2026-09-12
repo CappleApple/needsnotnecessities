@@ -1,6 +1,7 @@
 package com.cappleapple.needsnotnecessities.client;
 
 import com.cappleapple.needsnotnecessities.config.ServerConfig;
+import com.cappleapple.needsnotnecessities.survival.food.PlacedFoodResolver;
 import com.cappleapple.needsnotnecessities.modifier.SurvivalModifier;
 import com.cappleapple.needsnotnecessities.survival.SurvivalModule;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public final class ClientTooltipService {
     public static void addTooltips(ItemTooltipEvent event) {
         addComfortTooltip(event);
         ItemStack stack = event.getItemStack();
-        FoodProperties food = stack.getFoodProperties(event.getEntity());
+        FoodProperties food = PlacedFoodResolver.foodProperties(stack, event.getEntity());
         if (food == null) {
             return;
         }
@@ -44,6 +45,7 @@ public final class ClientTooltipService {
                 "hours_per_saturation_point", ServerConfig.INSTANCE.hoursPerSaturationPoint.getAsDouble());
         double foodHours = food.nutrition() * hungerPointHours + food.saturation() * saturationPointHours;
         boolean advanced = event.getFlags().isAdvanced();
+        boolean placedServing = stack.getFoodProperties(event.getEntity()) == null;
         if (ClientSurvivalCache.enabled(SurvivalModule.HUNGER)) {
             CompoundTag group = foodGroup(foodHours);
             String groupName = group == null ? "Food" : group.getString("name");
@@ -51,7 +53,7 @@ public final class ClientTooltipService {
                     ? groupName
                     : group.getString("description");
             int color = group == null ? 0xE8E8E8 : group.getInt("color");
-            event.getToolTip().add(Component.literal(flavorText)
+            event.getToolTip().add(Component.literal(flavorText + (placedServing ? " (per serving)" : ""))
                     .withStyle(style -> style.withColor(color)));
             if (advanced) {
                 event.getToolTip().add(debug(String.format(
@@ -65,7 +67,7 @@ public final class ClientTooltipService {
                     Locale.ROOT, "  Thirst cost: %.3f hours", thirstHours)));
         }
         if (Screen.hasShiftDown() && ClientSurvivalCache.enabled(SurvivalModule.ACTIVE_MEAL)) {
-            ClientMealPreviewService.Preview preview = ClientMealPreviewService.analyze(stack, foodHours);
+            ClientMealPreviewService.Preview preview = ClientMealPreviewService.analyze(PlacedFoodResolver.analysisStack(stack), foodHours);
             event.getToolTip().add(Component.literal(String.format(
                     Locale.ROOT, "Active Meal effects (%.1f hours):", preview.durationHours()))
                     .withStyle(ChatFormatting.GOLD));

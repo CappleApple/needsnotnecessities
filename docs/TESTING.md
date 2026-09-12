@@ -11,6 +11,16 @@ Use Java 21 for development and release checks.
 
 The automated suite covers the shared timeline math, command handling, player clone/respawn lifecycle, death settings, phantom spawning rules, state initialization, health synchronization, and several datapack/config edge cases.
 
+Placed-food tests cover cake and candle-cake bites, rejected interactions, duplicate consumption events, disabled Hunger, and recursive recipes through non-edible food blocks.
+
+To include Farmer's Delight in the GameTest run, supply a local NeoForge 1.21.1 jar:
+
+```powershell
+.\gradlew.bat runGameTestServer "-PfarmersDelightTestJar=C:\path\to\FarmersDelight-1.21.1-1.3.4.jar"
+```
+
+The optional checks eat the three pies, collect and eat servings from the four main feasts, and trace slices and servings through their original recipes. Without the property, the test reports that these checks were omitted. The supplied jar is used for local runs and is not bundled in the release.
+
 GameTest classes are development-only and are excluded from the release jar.
 
 ## Dedicated server check
@@ -38,6 +48,8 @@ The sections below are the scenarios worth checking in a disposable world when t
 - Verify the vanilla hunger bar/tick is replaced only while the Hunger module is enabled.
 - Check the configured stage-percentage eating threshold, including custom state counts and the 0%/100% boundaries.
 - Confirm `can_always_eat` foods remain usable when ordinary food is blocked.
+- Eat cake and candle-cake bites with full vanilla hunger and low custom Hunger. Confirm each bite updates Hunger, Thirst, and Active Meal once, including the last bite.
+- With Farmer's Delight installed, repeat with pies and compare the results with eating their held slices. Collect feast servings and cut slices; confirm food effects apply only when the resulting item is eaten.
 - Apply vanilla Hunger and verify it changes custom drain by the configured multiplier.
 - With Farmer's Delight installed, verify Nourishment pauses the custom timer when that compatibility option is enabled.
 
@@ -79,13 +91,15 @@ The sections below are the scenarios worth checking in a disposable world when t
 - Check that a weaker meal does not replace a stronger active meal unless the configured replacement rule allows it.
 - Combine different food groups and verify their numeric bonuses stack.
 - Repeat ingredients from the same group and verify the configured diminishing factor.
-- Check a recipe chain several levels deep and confirm prepared ingredients inherit their own recipe contributions.
+- Check a recipe chain several levels deep, including a cake, pie, or feast ingredient, and confirm prepared ingredients inherit their own recipe contributions.
+- Compare per-serving tooltips on placed foods with the corresponding held portions and `/nnn meal analyze`.
 - Add an intentional recipe cycle in a test datapack and confirm analysis terminates cleanly.
 - Change `meal.maximum_bonuses` and verify the combined result is capped deterministically.
 
 ### Datapack reloads and notifications
 
 - Override at least one state and meal definition, run `/nnn reload` or `/reload`, and confirm the live data changes without a restart.
+- Change a recipe without changing the total recipe count, reload, and confirm both the tooltip preview and applied meal use the new ingredients.
 - Test state-entry notifications with sound/action-bar combinations and with no notifications.
 - Confirm notifications fire on entering a state rather than every tick spent inside it.
 
@@ -99,7 +113,7 @@ The sections below are the scenarios worth checking in a disposable world when t
 
 When touching an adapter, test both with the optional mod installed and with it completely absent:
 
-- Farmer's Delight / Nourishment
+- Farmer's Delight / Nourishment, pies, and feast servings
 - Quality Food
 - Panels Not Screens
 - Sable / Create Aeronautics comfort scanning

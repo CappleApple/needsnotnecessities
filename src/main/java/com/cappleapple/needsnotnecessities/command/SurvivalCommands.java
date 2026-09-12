@@ -8,6 +8,7 @@ import com.cappleapple.needsnotnecessities.survival.comfort.ComfortService;
 import com.cappleapple.needsnotnecessities.survival.hunger.HungerService;
 import com.cappleapple.needsnotnecessities.survival.meal.MealAnalysis;
 import com.cappleapple.needsnotnecessities.survival.meal.MealRecipeAnalyzer;
+import com.cappleapple.needsnotnecessities.survival.food.PlacedFoodResolver;
 import com.cappleapple.needsnotnecessities.survival.state.SurvivalStateIds;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -170,13 +171,13 @@ public final class SurvivalCommands {
 
     private static int mealAnalyze(CommandSourceStack source, ServerPlayer player) {
         ItemStack stack = player.getMainHandItem();
-        FoodProperties food = stack.getFoodProperties(player);
+        FoodProperties food = PlacedFoodResolver.foodProperties(stack, player);
         if (stack.isEmpty() || food == null) {
             source.sendFailure(Component.literal("Hold a food item in the main hand"));
             return 0;
         }
         double foodHours = HungerService.calculateFoodHours(food);
-        MealAnalysis analysis = MealRecipeAnalyzer.analyze(player, stack, foodHours);
+        MealAnalysis analysis = MealRecipeAnalyzer.analyze(player, PlacedFoodResolver.analysisStack(stack), foodHours);
         source.sendSuccess(() -> Component.literal(String.format(
                 Locale.ROOT,
                 "%s: food %.3f h, score %.3f, complexity %d, duration %.3f h, quality %.3f",

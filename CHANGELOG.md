@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.10 - 2026-09-12
+
+### Fixed
+
+- Eating placed cakes and Farmer's Delight pies now applies Hunger, Thirst, and Active Meal effects once per bite.
+- Placed foods, cut slices, and feast servings now inherit recipe ingredients recursively with the existing food-group diminishing returns and cycle protection.
+- Food tooltips and meal inspection now show per-serving nutrition and effects for placed foods, and recipe previews refresh after recipe reloads.
+
 ## 1.1.9 - 2026-09-09
 
 ### Changed

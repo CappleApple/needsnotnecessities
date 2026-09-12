@@ -1,6 +1,7 @@
 package com.cappleapple.needsnotnecessities.client;
 
 import com.cappleapple.needsnotnecessities.NeedsNotNecessities;
+import com.cappleapple.needsnotnecessities.survival.food.PlacedFoodResolver;
 import com.cappleapple.needsnotnecessities.config.ServerConfig;
 import com.cappleapple.needsnotnecessities.modifier.ModifierOperation;
 import com.cappleapple.needsnotnecessities.modifier.SurvivalModifier;
@@ -9,9 +10,9 @@ import com.cappleapple.needsnotnecessities.survival.meal.MealBonusAggregator;
 import com.cappleapple.needsnotnecessities.survival.meal.MealGroupDiminishingTracker;
 import com.cappleapple.needsnotnecessities.survival.meal.MealIngredientProfile;
 import com.cappleapple.needsnotnecessities.survival.meal.MealIngredientResolver;
+import com.cappleapple.needsnotnecessities.survival.meal.MealRecipeIndex;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +26,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
 final class ClientMealPreviewService {
@@ -35,7 +33,7 @@ final class ClientMealPreviewService {
             ResourceLocation.fromNamespaceAndPath("quality_food", "quality");
     private static RecipeManager indexedManager;
     private static int indexedRecipeCount = -1;
-    private static Map<Item, List<RecipeHolder<?>>> recipesByOutput = Map.of();
+    private static MealRecipeIndex recipeIndex;
 
     private ClientMealPreviewService() {
     }
@@ -51,25 +49,21 @@ final class ClientMealPreviewService {
         MealIngredientResolver<CompoundTag> ingredientResolver = new MealIngredientResolver<>(
                 ClientMealPreviewService::matchingDefinitions,
                 ClientMealPreviewService::recipeIngredients,
-                stack -> stack.getFoodProperties(minecraft.player) != null);
+                stack -> stack.getFoodProperties(minecraft.player) != null
+                        || PlacedFoodResolver.isPlacedFood(stack));
 
-        RecipeHolder<?> recipe = bestRecipe(eatenStack.getItem());
-        int complexity = 0;
-        if (recipe != null) {
-            complexity = directComplexity(recipe);
-            for (Ingredient ingredient : recipe.value().getIngredients()) {
-                ItemStack[] alternatives = ingredient.getItems();
-                if (alternatives.length == 0) {
-                    continue;
-                }
-                accumulator.acceptIngredient(
-                        ingredientResolver.resolveIngredient(alternatives),
-                        ClientSurvivalCache.number(
-                                "meal_same_group_diminishing_factor",
-                                ServerConfig.INSTANCE.mealSameGroupDiminishingFactor.getAsDouble()));
-                if (containsPreparedAlternative(alternatives)) {
-                    complexity++;
-                }
+        int complexity = recipeIndex.complexity(eatenStack.getItem());
+        for (ItemStack[] alternatives : recipeIndex.ingredientsFor(eatenStack.getItem())) {
+            if (alternatives.length == 0) {
+                continue;
+            }
+            accumulator.acceptIngredient(
+                    ingredientResolver.resolveIngredient(alternatives),
+                    ClientSurvivalCache.number(
+                            "meal_same_group_diminishing_factor",
+                            ServerConfig.INSTANCE.mealSameGroupDiminishingFactor.getAsDouble()));
+            if (containsPreparedAlternative(alternatives)) {
+                complexity++;
             }
         }
 
@@ -110,40 +104,25 @@ final class ClientMealPreviewService {
         return new Preview(duration * quality.duration(), complexity, modifiers);
     }
 
+    static void clearRecipeCache() {
+        indexedManager = null;
+        indexedRecipeCount = -1;
+        recipeIndex = null;
+    }
+
     private static void ensureRecipeIndex(RecipeManager manager, Minecraft minecraft) {
         int count = manager.getRecipes().size();
         if (indexedManager == manager && indexedRecipeCount == count) {
             return;
         }
-        Map<Item, List<RecipeHolder<?>>> rebuilt = new HashMap<>();
-        for (RecipeHolder<?> holder : manager.getRecipes()) {
-            ItemStack result = holder.value().getResultItem(minecraft.level.registryAccess());
-            if (!result.isEmpty()) {
-                rebuilt.computeIfAbsent(result.getItem(), ignored -> new ArrayList<>()).add(holder);
-            }
-        }
-        rebuilt.replaceAll((item, holders) -> List.copyOf(holders));
+        recipeIndex = MealRecipeIndex.build(manager, minecraft.level.registryAccess());
         indexedManager = manager;
         indexedRecipeCount = count;
-        recipesByOutput = Map.copyOf(rebuilt);
-    }
-
-    private static RecipeHolder<?> bestRecipe(Item item) {
-        return recipesByOutput.getOrDefault(item, List.of()).stream()
-                .max(Comparator.comparingInt(ClientMealPreviewService::directComplexity))
-                .orElse(null);
-    }
-
-    private static int directComplexity(RecipeHolder<?> holder) {
-        int ingredients = (int) holder.value().getIngredients().stream()
-                .filter(ingredient -> !ingredient.hasNoItems())
-                .count();
-        return ingredients + (holder.value() instanceof AbstractCookingRecipe ? 1 : 0);
     }
 
     private static boolean containsPreparedAlternative(ItemStack[] alternatives) {
         for (ItemStack alternative : alternatives) {
-            if (recipesByOutput.containsKey(alternative.getItem())) {
+            if (recipeIndex.contains(alternative.getItem())) {
                 return true;
             }
         }
@@ -151,14 +130,7 @@ final class ClientMealPreviewService {
     }
 
     private static List<ItemStack[]> recipeIngredients(Item item) {
-        RecipeHolder<?> recipe = bestRecipe(item);
-        if (recipe == null) {
-            return List.of();
-        }
-        return recipe.value().getIngredients().stream()
-                .map(Ingredient::getItems)
-                .filter(items -> items.length > 0)
-                .toList();
+        return recipeIndex.ingredientsFor(item);
     }
 
     private static List<MealIngredientResolver.Definition<CompoundTag>> matchingDefinitions(ItemStack stack) {

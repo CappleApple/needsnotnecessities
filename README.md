@@ -27,6 +27,10 @@ When the custom hunger system is enabled, it replaces vanilla hunger ticking and
 
 Food effects are driven by datapack definitions. Meals can inherit contributions from their ingredients, including prepared ingredients that themselves come from recipes. Repeated ingredients within the same configured group can use diminishing returns, while separate groups can stack normally.
 
+Placed foods count too. Eating cake or a Farmer's Delight pie applies the same hunger, thirst, and meal effects as held food. Slices and feast servings inherit the full food's recipe, including its prepared ingredients. Collecting or cutting a portion does not apply food effects until it is eaten.
+
+Tooltips on placed foods show nutrition and meal effects per serving.
+
 Farmer's Delight Nourishment is supported and, by default, pauses the custom hunger countdown while active.
 
 Quality Food compatibility is also included.

@@ -36,7 +36,11 @@ Place definitions in `data/<namespace>/meal_effects/*.json`. A definition must s
 
 An exact-item rule uses `"item": "minecraft:beef"` instead of `tags`. Supported operations are `ADD`, `MULTIPLY_BASE`, and `MULTIPLY_TOTAL`. Targets may be registered attributes or the custom scalar `needs_not_necessities:passive_regeneration`.
 
-The result item and every recipe ingredient contribute their matching effects. When an ingredient is itself an edible prepared food with a recipe, its ingredients are resolved recursively through every further prepared-food layer. This makes an intermediate food's displayed buffs carry into meals that use it, such as Raw Pasta carrying its dough-derived bonuses into Pasta with Meatballs. A repeated item on the active recipe path ends that branch, preventing reversible or cyclic recipes from recursing forever without imposing an arbitrary depth cutoff.
+The result item and every recipe ingredient contribute their matching effects. When an ingredient is itself a prepared held or placed food with a recipe, its ingredients are resolved recursively through every further prepared-food layer. This includes cake, pie, and feast items that cannot be eaten while held. Farmer's Delight serving items without native recipes receive an analysis-only ingredient link to their declared food block; existing crafting/cooking/cutting recipes take precedence. State-dependent feast servings are read from the block's own serving methods, including subclasses. Collecting or cutting a serving does not consume food.
+
+Other mods can mark additional non-edible recipe intermediates with the item tag `needs_not_necessities:placed_foods`, defined at `data/needs_not_necessities/tags/item/placed_foods.json`. This tag enables recursive recipe expansion; it does not make items edible or invent serving conversions. Direct in-world food grants through vanilla `FoodData` during block interactions are tracked using the clicked block item when no supported serving method is available.
+
+This makes an intermediate food's displayed buffs carry into meals that use it, such as Raw Pasta carrying its dough-derived bonuses into Pasta with Meatballs. A repeated item on the active recipe path ends that branch, preventing reversible or cyclic recipes from recursing forever without imposing an arbitrary depth cutoff.
 
 Each `meal_effects` definition ID is one food group. Distinct groups contribute at full strength and amounts with the same modifier target and operation add into one combined modifier, so two groups that each grant `+5% armor` produce one `+10% armor` meal effect. All bundled food, Hunger, Thirst, Rest, and Comfort modifiers use percentage operations; `ADD` remains available for custom datapacks.
 
@@ -102,7 +106,7 @@ Place hunger-hour label ranges in `data/<namespace>/food_tooltip_groups/*.json`:
 
 Bounds are inclusive; when two definitions share a boundary, the lower range wins. Omit `maximum_hours` for the final open-ended group. The built-in progression is Light Snack, Snack, Small Meal, Meal, Filling Meal, Substantial Meal, and Hearty Meal. The bundled flavor labels contain at most two words, but datapacks are not subject to an artificial word limit.
 
-Normal food tooltips only show the short flavor label. F3+H reveals exact hunger restoration and thirst cost. Holding Shift reveals predicted Active Meal modifiers and their duration; Shift and F3+H together also show the advanced recipe analysis.
+Normal food tooltips show the short flavor label; placed cakes, pies, and feasts also mark it as per serving. Their Shift previews and meal inspection use the corresponding bite/serving recipe. F3+H reveals exact hunger restoration and thirst cost. Holding Shift reveals predicted Active Meal modifiers and their duration; Shift and F3+H together also show the advanced recipe analysis.
 
 ## Comfort
 
