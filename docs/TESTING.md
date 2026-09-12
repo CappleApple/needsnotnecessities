@@ -1,61 +1,123 @@
-# Overall testing pass
+# Testing
 
-Build and automated tests:
+Use Java 21 for development and release checks.
+
+## Automated tests
 
 ```powershell
 .\gradlew.bat clean test build
-```
-
-Run the automated command, respawn lifecycle, and phantom spawning tests in an isolated GameTest world:
-
-```powershell
 .\gradlew.bat runGameTestServer
 ```
 
-These tests exercise real command dispatch and player replacement, including a later respawn handler that refills health, the outbound health packet, non-death End returns, and disabled death penalties. Phantom tests run the real vanilla spawner and check actual entities, the lowest-stage boundary, recovery, disabled Rest, unchanged insomnia statistics, game rules, daylight, roofs, altitude, difficulty, game modes, existing mod denials, and missing state initialization. GameTest classes are excluded from the released mod JAR.
+The automated suite covers the shared timeline math, command handling, player clone/respawn lifecycle, death settings, phantom spawning rules, state initialization, health synchronization, and several datapack/config edge cases.
 
-Run the dedicated-server smoke test with `run/eula.txt` accepted:
+GameTest classes are development-only and are excluded from the release jar.
+
+## Dedicated server check
 
 ```powershell
 .\gradlew.bat runServer
 ```
 
-The manual pass should cover:
+Before a release, confirm the server reaches `Done`, saves normally, and does not require client UI classes.
 
-- Install both mod JARs, join with every module enabled, open inventory, and verify there is no title above the status rows. Hover each Hunger, Thirst, and Rest row and confirm its tooltip lists the current datapack tier's generic modifiers and passive-regeneration change, or `No effects` for a modifier-free tier. Beneficial/nonnegative amounts should be green and negative amounts red in both these hover details and Shift food previews. Confirm the draggable handle uses the complete, uncropped carrot item texture at the normal 16x16 GUI-icon scale, then expand/collapse it, drag it around every screen edge, and verify its position, docking side, and collapsed state persist after relog/restart. Set `inventory_overlay.panel_icon_sprite` to another valid GUI sprite or item/block texture ID and verify the complete icon changes without affecting panel movement. If the client config file is temporarily locked by another process, moving the panel may fail to persist and log an error, but it must not crash the client.
-- Verify the vanilla hunger bar is absent, vanilla starvation/natural hunger regeneration does not run, food remains edible at full vanilla food level, and named hunger state advances using nutrition plus saturation.
-- With the default `hunger.eat_below_stage_percentage = 90`, verify food can be eaten in each of the lowest four default Hunger stages but not in the best stage. Repeat around custom datapack stage counts and with 0%/100% settings.
-- Disable Hunger only, restart/reload the server config as required, and verify vanilla hunger behavior/UI returns while thirst, rest, meals, comfort, and regeneration remain functional.
-- Sleep without completing a time skip and confirm continuous partial Rest recovery. With the default 50% Rest threshold, verify Exhausted and Tired players may sleep while Neutral, Rested, and Well Rested players receive the not-tired message.
-- At night under open sky above sea level, enter Exhausted with `/nnn rest set @s 0` and verify phantoms can appear on normal spawn attempts even after a recent sleep. Recover into Tired and verify new Rest-based spawns stop. Repeat with custom Rest stage IDs/order, and with Rest disabled to confirm vanilla insomnia returns. `doInsomnia=false` and `doMobSpawning=false` must still prevent natural phantom spawning.
-- Set `playersSleepingPercentage` to several values. Verify enough daytime sleepers skip to tick 13000 (night) and enough nighttime sleepers skip to the next day. Every player who was actually sleeping for the completed skip should immediately reach the best configured Rest state, receive its modifiers, and see the updated panel; awake players must remain unchanged. Then test `rest.allow_daytime_sleep`, `rest.require_tired_to_sleep`, `rest.sleep_below_stage_percentage`, and `rest.daytime_sleep_skips_to_night`; the final option should make daytime sleepers skip to the next day when false.
-- Drink water, regular/splash/lingering potions, Farmer's Delight drinks, common-tag drinks, and tagged alcohol; confirm normal drinks improve thirst and alcohol uses its separate adjustment.
-- Verify drinks work in every default Thirst stage, including the best stage. Confirm non-drink use items remain unaffected.
-- Stand idle without eating and verify Thirst never moves. Eat foods worth several different hunger-hour amounts and confirm Thirst drops only by the configured `thirst_hours_per_food_hour` ratio and immediately updates state modifiers.
-- Apply vanilla Hunger and verify the custom hunger timer drains at exactly twice its normal rate while the effect lasts.
-- With Farmer's Delight installed, apply Nourishment and verify the custom hunger timer stops. Apply Hunger and Nourishment together and verify Nourishment still pauses the countdown; remove Nourishment and confirm Hunger acceleration resumes. Disable `compatibility.farmers_delight_nourishment_pauses_hunger` and verify the pause no longer occurs.
-- Compare Instant Health, Regeneration, and Absorption on players with 20 and 40 maximum health. With the default 20-health reference, verify every healing and absorption amount doubles at 40 max health and halves at 10 max health. Damage part of the absorption, change max health, and verify the same filled fraction remains. Disable `health_effects.scale_with_max_health` and verify vanilla fixed amounts return.
-- Set `base_health.amount` to `10` in `ADD` mode and verify `/attribute <player> minecraft:generic.max_health base get` reports `30`, then apply a percentage max-health modifier and verify it calculates from that 30-point base. Repeat after `/reload`, relogging, and a full server restart to confirm the adjustment neither compounds nor reverts; disable the Base Health module and verify the prior base is restored.
-- While current health is above a removable max-health bonus, remove that bonus and verify health clamps to the new maximum without a red damage flash, hurt sound, invulnerability flash, or camera tilt. Repeat while taking real damage in the same update and verify the real damage still produces normal feedback.
-- Fill the custom Hunger state completely and verify golden apples, enchanted golden apples, suspicious stew, and other foods marked `can_always_eat` remain usable while ordinary food remains blocked by the configured stage threshold.
-- Inspect foods normally and verify only the short datapack flavor label appears. Enable F3+H and verify hunger restoration/thirst cost appear; hold Shift and verify Active Meal effects/durations appear. Test Shift+F3+H together, then compare the prediction with `/nnn meal analyze` after eating.
-- Place repeated same-type and mixed-type comfort sources; compare `/nnn comfort scan <player>` with the panel, retention timer, and expected geometric diminishing returns.
-- Confirm first server load creates `config/needs_not_necessities/comfort_auto_classification.json`. With at least one furniture mod installed, place blocks whose registry paths contain chair, bench, sofa/couch, table/desk, lamp, fireplace/stove, and bed/futon tokens. Run `/nnn reload`, verify each item tooltip reports its automatically classified comfort type, and verify `/nnn comfort scan` includes the placed block. Check that a crafting table, table lamp, industrial oven, and garden bed do not inherit the excluded categories. Test a name such as `desk_chair` and verify it receives only the first matching group in JSON order; reorder chairs and tables, reload, and verify the selected group changes. Tune a rule's regex/name/comfort and verify `/reload` applies it. Replace the file with `{}`, reload, and verify all automatic matches disappear while explicit comfort tags still work. Finally, explicitly tag a block that also matches a higher-valued regex in a different group and verify only the explicit definition applies.
-- With Sable and Create Aeronautics installed, assemble a vehicle containing explicitly tagged and automatically classified comfort blocks. Stand within the configured scan radius and verify `/nnn comfort scan <player>` includes them while the vehicle is stationary, moving, and rotated. Confirm the reported positions follow the vehicle in world space, and verify ordinary world comfort blocks still contribute normally.
-- Eat basic, cooked, and multi-ingredient foods; verify only one Active Meal applies, weaker food cannot replace it, and equal-score policy follows server config.
-- Define two different food-group definitions that each grant `+5% armor`, use one ingredient from each in a recipe, and verify both the Shift tooltip and active meal show a combined `+10% armor` modifier.
-- Use two ingredients matched by the same vegetable definition and verify a `+5% armor` definition totals `+7.5% armor` with the default `meal.same_group_diminishing_factor = 0.5`. Add a third and verify `+8.75% armor`; test `1.0`, `0.25`, and `0.0` factors as well. Confirm each recipe tag slot is counted once regardless of how many item alternatives it contains.
-- With Farmer's Delight installed, inspect Steak and Potatoes while holding Shift and verify every ingredient supplied through current common food tags contributes at every recursive recipe depth. The default datapack must not rely on ingredient-specific Baked Potato or Cooked Rice overrides.
-- Still with Farmer's Delight, inspect Raw Pasta and record its dough-derived Active Meal modifiers. Then inspect Pasta with Meatballs and verify those Raw Pasta modifiers are included alongside its meat and sauce contributions. Repeat with another food chain at least three recipes deep and confirm each inherited group follows the same configured diminishing sequence.
-- Add a test datapack with two edible foods whose selected recipes reference one another. Verify Shift preview and server analysis terminate normally and count the repeated item only as the cycle-ending ingredient rather than recursing indefinitely.
-- Confirm `meal.maximum_bonuses` defaults to 5 and lowering it deterministically caps distinct combined modifier lines after numeric stacking.
-- Add a datapack meal rule for an item or `#c:food/meat`, run `/nnn reload`, and verify the new trait/bonus appears without a restart.
-- Die once while both Hunger and Thirst are above their configured post-death levels and verify `You awaken weak, hungry, and parched.` appears. Die when either need is already at/below its post-death value and verify it does not. Change/blank the server-config message and repeat.
-- Set `death.respawn_health_percentage` to `0.25`, die, and verify health stays at zero until respawning, then becomes 25% of the new maximum (at least one health point). Repeat with max-health bonuses, `keepInventory` enabled, and a non-default Base Health setting. Heal afterward and confirm the percentage is not reapplied. Disable `death.enabled` and verify vanilla respawn health is retained; returning through the End exit without dying must preserve existing health.
-- Run `/nnn reset` and `/needs_not_necessities reset` as a player and verify only that player's survival data resets. Run `/nnn reset <other player>` and verify only the explicit target resets. From the server console, verify a player argument is still required.
-- Test death, non-death End return, dimension changes, relog, and a full server restart for persistence and non-duplicating attribute modifiers.
-- Override a state with every datapack notification type, combinations, and no `notifications` array. Verify outputs occur only on entering that state. The bundled defaults should play the three lowest-state warning sounds; entering each highest Hunger, Thirst, or Rest state should show its full-state action-bar message and play its configured sound.
-- Install Quality Food 1.21.1, consume none/iron/gold/diamond-quality copies of the same result item, and confirm quality primarily extends duration with only the configured capped strength increase. Remove Quality Food and confirm startup still succeeds.
-- Remove Farmer's Delight and confirm startup still succeeds without a hard dependency.
-- Connect two clients and verify each player receives only their own snapshot, sleep recovery works independently, and no panel state leaks between clients.
-- Use `/nnn status`, state `set`/`add`, meal `inspect`/`analyze`, `reset`, and `reload` as an operator.
+## Core manual pass
+
+The sections below are the scenarios worth checking in a disposable world when the related system changes. They are grouped by feature instead of as one release-signoff checklist.
+
+### HUD and client state
+
+- Open the inventory with Hunger, Thirst, and Rest enabled and verify the Panels Not Screens status panel appears without replacing the normal inventory.
+- Expand/collapse the panel, move/dock its handle on each side, relog, and confirm the client-local position/state persists.
+- Hover Hunger, Thirst, and Rest rows and confirm the current state's modifier summary matches the loaded datapack definition.
+- Change `inventory_overlay.panel_icon_sprite` and verify the handle uses the new item/block/GUI sprite without affecting movement.
+- Temporarily make the client config unwritable and confirm a failed save logs an error without crashing.
+
+### Hunger
+
+- Verify the vanilla hunger bar/tick is replaced only while the Hunger module is enabled.
+- Check the configured stage-percentage eating threshold, including custom state counts and the 0%/100% boundaries.
+- Confirm `can_always_eat` foods remain usable when ordinary food is blocked.
+- Apply vanilla Hunger and verify it changes custom drain by the configured multiplier.
+- With Farmer's Delight installed, verify Nourishment pauses the custom timer when that compatibility option is enabled.
+
+### Thirst
+
+- Check normal drinks, potion forms, tagged drinks, and tagged alcohol.
+- Verify Thirst does not passively move while the player does nothing.
+- Eat foods with different hunger-hour values and confirm the configured food-to-thirst pressure is applied.
+- Confirm disabling the Thirst module leaves unrelated systems running.
+
+### Rest and sleep
+
+- Sleep without completing a time skip and verify partial Rest recovery.
+- Check the configured “tired enough to sleep” threshold during daytime.
+- Test `playersSleepingPercentage` with both daytime and nighttime skips and confirm only participating sleepers receive the completed-sleep Rest refill.
+- In the lowest configured Rest state, verify natural phantom spawning still follows darkness/sky/altitude/difficulty/gamerule checks.
+- Move out of the lowest Rest stage and verify Rest-based phantom attempts stop.
+- Disable Rest and confirm vanilla insomnia behavior returns.
+
+### Health
+
+- Test the Base Health module in both additive and percentage-modifier combinations and reload/restart to make sure the base value does not compound.
+- Remove a max-health bonus while current health is above the new maximum and verify the clamp does not look like incoming damage.
+- Compare Instant Health, Regeneration, and Absorption on players with different maximum health values when proportional scaling is enabled.
+- Test death respawn-health percentage with max-health modifiers and with the death module disabled.
+- Return from the End without dying and verify death-only health/reset logic is not applied.
+
+### Comfort
+
+- Place repeated and mixed comfort source types and compare the panel with `/nnn comfort scan <player>`.
+- Edit `comfort_auto_classification.json`, reload, and confirm regex group order/values change classification as expected.
+- Set the auto-classification file to `{}` and confirm explicit datapack block/tag comfort still works.
+- Give a block both an explicit datapack definition and a regex match and confirm the explicit definition wins.
+- If testing Sable/Create Aeronautics support, move and rotate a sub-level containing comfort sources and verify the scan follows the transformed world positions.
+
+### Active Meals
+
+- Eat foods with basic and multi-ingredient recipes and compare the Shift tooltip preview with `/nnn meal analyze`.
+- Check that a weaker meal does not replace a stronger active meal unless the configured replacement rule allows it.
+- Combine different food groups and verify their numeric bonuses stack.
+- Repeat ingredients from the same group and verify the configured diminishing factor.
+- Check a recipe chain several levels deep and confirm prepared ingredients inherit their own recipe contributions.
+- Add an intentional recipe cycle in a test datapack and confirm analysis terminates cleanly.
+- Change `meal.maximum_bonuses` and verify the combined result is capped deterministically.
+
+### Datapack reloads and notifications
+
+- Override at least one state and meal definition, run `/nnn reload` or `/reload`, and confirm the live data changes without a restart.
+- Test state-entry notifications with sound/action-bar combinations and with no notifications.
+- Confirm notifications fire on entering a state rather than every tick spent inside it.
+
+### Death/reset commands
+
+- Check the configured post-death Hunger/Thirst levels and optional message.
+- Run `/nnn reset` as a player, `/nnn reset <player>` as an operator, and the long command alias.
+- Test death, relog, dimension changes, and restart for persistent state and non-duplicating modifiers.
+
+### Optional integrations
+
+When touching an adapter, test both with the optional mod installed and with it completely absent:
+
+- Farmer's Delight / Nourishment
+- Quality Food
+- Panels Not Screens
+- Sable / Create Aeronautics comfort scanning
+
+For multiplayer changes, connect at least two clients and verify snapshots, sleep recovery, and panel state do not leak between players.
+
+## Useful commands
+
+```text
+/nnn status
+/nnn hunger set <player> <value>
+/nnn thirst set <player> <value>
+/nnn rest set <player> <value>
+/nnn comfort scan <player>
+/nnn meal inspect
+/nnn meal analyze
+/nnn reset [player]
+/nnn reload
+```
+
+The exact command tree may grow over time; `/help nnn` is the best source for the current operator surface.

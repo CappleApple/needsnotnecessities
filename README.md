@@ -1,38 +1,112 @@
 # Needs, Not Necessities
 
-`needs_not_necessities` is a NeoForge 1.21.1 survival framework focused on preparation, readable consequences, and low-maintenance play. 
+Needs, Not Necessities is a configurable survival framework for NeoForge 1.21.1.
 
-Hunger fully replaces the vanilla hunger tick/HUD when enabled; thirst, rest, comfort, Active Meals, passive regeneration, base health, notifications, Quality Food compatibility, the inventory panel, commands, and integration hooks remain independently toggleable. Farmer's Delight Nourishment pauses the custom hunger countdown by default, vanilla Instant Health and Regeneration healing scale against player max health, and recipe ingredient bonuses combine numerically into the resulting Active Meal. Prepared-food ingredients recursively inherit their own recipe contributions at any depth with cycle protection. Different datapack food groups stack fully, while repeated ingredients from one group use a configurable geometric diminishing factor (50% by default).
+It adds survival systems that matter enough to prepare for, but are not meant to turn the game into constant meter babysitting. Hunger, thirst, rest, comfort, meals, regeneration, health tuning, notifications, and the inventory status panel can all be enabled or disabled separately.
 
-The client requires [Panels Not Screens](https://github.com/CappleApple/panelsnotscreens) 0.1.0 or newer. Its draggable carrot handle opens, collapses, docks, and moves the titleless inventory status panel; both handle position and panel state persist locally. Hovering a Hunger, Thirst, or Rest row shows every modifier supplied by that row's current datapack state. The handle accepts either a GUI sprite or an item/block texture resource location through `inventory_overlay.panel_icon_sprite`; it defaults to `minecraft:item/carrot`. The exact 0.1.0 companion JAR used by this checkout is kept in `libs/`.
+The mod is designed mainly for modpacks, so most of the important behavior is data-driven rather than hard-coded around one balance style.
 
-Comfort classifications are generated from registered block IDs at datapack reload time and cached for runtime scans. A separately generated JSON server config supplies tunable regex groups for beds, chairs, benches, sofas, tables, lighting, and hearths; `{}` disables automatic matching entirely. Explicit datapack block/tag sources always suppress regex matches for the same block, so pack authors retain final control. Comfort scans include nearby moving and rotated Sable sub-levels, allowing those same definitions to work on Create Aeronautics vehicles without making Sable a required dependency. Active Meal defaults rely on common food tags rather than ingredient-specific Baked Potato or Cooked Rice overrides.
+## Main systems
 
-When Rest is enabled, phantoms can spawn around survival and adventure players in the lowest configured Rest stage (Exhausted by default). Higher Rest stages prevent these spawn attempts. The normal spawn interval, darkness, sky access, altitude, local difficulty, and `doInsomnia`/`doMobSpawning` rules still apply. This does not change the recorded Time Since Last Rest statistic; disabling Rest restores vanilla insomnia behavior.
+- Custom hunger progression
+- Optional thirst
+- Rest / sleep pressure
+- Comfort from nearby blocks and furniture
+- Active Meals and food-group bonuses
+- Configurable passive regeneration
+- Configurable base health
+- HUD/inventory status display
+- Datapack-defined states and effects
+- Operator commands and integration hooks
 
-## Development
+You can use only the parts you want. Disabling one system does not require disabling the rest of the mod.
 
-Requirements:
+## Hunger and food
 
-- Java 21
+When the custom hunger system is enabled, it replaces vanilla hunger ticking and its HUD behavior.
+
+Food effects are driven by datapack definitions. Meals can inherit contributions from their ingredients, including prepared ingredients that themselves come from recipes. Repeated ingredients within the same configured group can use diminishing returns, while separate groups can stack normally.
+
+Farmer's Delight Nourishment is supported and, by default, pauses the custom hunger countdown while active.
+
+Quality Food compatibility is also included.
+
+## Thirst and rest
+
+Thirst can be enabled independently from hunger.
+
+Rest tracks how well-rested the player is over time. At low enough configured rest states, vanilla phantom spawning can resume around survival/adventure players. The normal phantom rules still apply, including darkness, sky access, local difficulty, `doInsomnia`, and `doMobSpawning`.
+
+If the Rest system is disabled, vanilla insomnia behavior is left alone.
+
+## Comfort
+
+Comfort is based on nearby blocks such as beds, seating, tables, lights, and hearth-like blocks.
+
+Pack authors can define comfort explicitly with datapacks. There is also an optional generated regex configuration for automatically classifying common furniture blocks by registry name.
+
+Explicit datapack definitions always take priority over automatic matching.
+
+Comfort scans can also see supported moving Sable sub-levels, which allows the same rules to work on vehicles without making Sable a required dependency.
+
+## Inventory panel
+
+The inventory status panel uses [Panels Not Screens](https://github.com/CappleApple/panelsnotscreens).
+
+A draggable handle opens and moves the panel, and its position/state are saved locally. Hovering a Hunger, Thirst, or Rest row shows the modifiers currently affecting that state.
+
+The panel icon can use either a GUI sprite or an item/block texture. The default is the vanilla carrot texture.
+
+## Data-driven configuration
+
+Survival state timelines live under:
+
+```text
+data/<namespace>/survival_states/*.json
+```
+
+Food groups, notifications, comfort definitions, meal effects, and related rules can also be supplied through datapacks.
+
+Built-in definitions are intended as defaults and examples rather than something packs are forced to keep.
+
+See [docs/DATAPACK_FORMATS.md](docs/DATAPACK_FORMATS.md) for the supported formats.
+
+## Commands
+
+Operator commands are available under:
+
+```text
+/needs_not_necessities
+```
+
+with the shorter alias:
+
+```text
+/nnn
+```
+
+## Requirements
+
 - Minecraft 1.21.1
-- NeoForge 21.1.244 or newer in the 21.1 line
+- NeoForge 21.1.244 or a compatible 21.1 build
+- Java 21
+- Panels Not Screens 0.1.0 or newer on the client
 
-Build with:
+## Building from source
+
+```bash
+./gradlew build
+```
+
+Windows:
 
 ```powershell
 .\gradlew.bat build
 ```
 
-The versioned mod JAR is written to `build/libs/needsnotnecessities-<version>.jar`.
+The built jar is written to `build/libs/`.
 
-Release notes and upgrade guidance are maintained in [CHANGELOG.md](CHANGELOG.md).
-
-Useful operator commands are rooted at `/needs_not_necessities` with `/nnn` as a short alias. See [docs/TESTING.md](docs/TESTING.md) for the multiplayer and compatibility test pass.
-
-## Data-driven state definitions
-
-State timelines live under `data/<namespace>/survival_states/*.json`. Per-state notification outputs, food tooltip groupings, comfort, and item/tag meal effects are also reloadable datapack JSON. Built-in definitions are examples and can be replaced by a datapack. See [docs/DATAPACK_FORMATS.md](docs/DATAPACK_FORMATS.md), including the configurable `#c:food/meat` example.
+Release changes are tracked in [CHANGELOG.md](CHANGELOG.md), and multiplayer/compatibility testing notes are in [docs/TESTING.md](docs/TESTING.md).
 
 ## License
 
